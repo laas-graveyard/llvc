@@ -17,6 +17,7 @@ CONFIGURE_LLV_FILE(
 # Add header list
 ADD_HEADERS(
 	FILES
-		ActionTrackingClient.h
-                ActionDisplayClient.h 
+		LLVC/ActionGrabClient.h
+		LLVC/ActionTrackingClient.h
+                LLVC/DisplayTrackingClient.h 
 )
