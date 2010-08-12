@@ -1,11 +1,21 @@
-/*! ----------------------------------------------------
- *  Copyright 2010, CNRS-AIST JRL
- *
- * ---------------------------------------------------- */
+// Copyright (C) 2010 by Claire Dune, Thomas Moulard, CNRS.
+//
+// This file is part of the LLVC.
+//
+// This software is provided "as is" without warranty of any kind,
+// either expressed or implied, including but not limited to the
+// implied warranties of fitness for a particular purpose.
+//
+// See the COPYING file for more information.
 
 #include <iostream>
 #include <fstream>
+
+#include <visp/vpXmlParserCamera.h>
+#include <visp/vpCameraParameters.h>
+
 #include "llvc/action-grab.h"
+#include "llvc/tools/indent.hh"
 #include "LowLevelVisionSystem.hh"
 
 
@@ -21,8 +31,6 @@ namespace trackingClient
   void convertCorbaImageToVispImage(const ImageData_var& imageCorbaSrc,
 				    vpImage<unsigned char>& imageVispDest)
   {
-    std::cout << imageCorbaSrc->width << std::endl
-	      << imageVispDest.getWidth() << std::endl;
     if (imageCorbaSrc->width - imageVispDest.getWidth() != 0
 	|| imageCorbaSrc->height - imageVispDest.getHeight() != 0)
       throw "Invalid image size in convertCorbaImageToVispImage";
@@ -54,7 +62,7 @@ namespace trackingClient
        CORBA::string_dup(m_format.c_str()));
 
     m_LLVS->StartProcess("IEEE1394 Image grabbing");
-    
+
     try
       {
 	m_LLVS->StartProcess("vispUndistordedProcess");
@@ -65,7 +73,7 @@ namespace trackingClient
       }
 
     CORBA::Long lw,lh;
-    try 
+    try
       {
 	m_LLVS->GetImagesGrabbedSize(m_cameraID,lw,lh);
       }
@@ -74,10 +82,23 @@ namespace trackingClient
 	std::cerr<< "Unable to GetImagesGrabbedSize LLVS" << std::endl;
       }
 
-    std::cout << "lw: " << lw << "  lh:" << lh << std::endl;
     long imWidth = lw;
     long imHeight = lh;
     m_image.resize(imHeight,imWidth);
+
+    //---- FIXME : this might be better not to have this written like that
+    const std::string camParamPath="./data/ViSP/hrp2CamParam/hrp2.xml";
+    const std::string camName="cam1394_3_rectif";
+    const vpCameraParameters::vpCameraParametersProjType proj=
+      vpCameraParameters::perspectiveProjWithoutDistortion;
+    vpXmlParserCamera camParser;
+    if(camParser.parse(m_cam,
+		      camParamPath.c_str(),
+		      camName,
+		      proj,
+		      imWidth,
+		       imHeight)!=vpXmlParserCamera::SEQUENCE_OK)
+      throw "Fail to open or parse camera parameter file";
   }
 
   ActionGrab::~ActionGrab()
@@ -89,8 +110,11 @@ namespace trackingClient
   std::ostream&
   ActionGrab::print (std::ostream& stream) const
   {
-    stream << "ActionGrab:" << std::endl
-	   << "\t camera id: " << m_cameraID << std::endl;
+    stream << "ActionGrab:" << incindent << iendl
+	   << "camera id: " << m_cameraID << iendl
+	   << "image format: " << m_format << iendl
+	   << "image size: "
+	   << m_image.getWidth() << "x" << m_image.getHeight() << decindent;
     return stream;
   }
 
@@ -110,7 +134,7 @@ namespace trackingClient
     CORBA::String_var format = CORBA::string_dup(m_format.c_str());
     sleep(1);
     m_LLVS->getRectifiedImage(cameraId, corbaImage);
-  
+
     convertCorbaImageToVispImage(corbaImage, m_image);
     return true;
   }
@@ -123,6 +147,7 @@ namespace trackingClient
   std::ostream& operator <<(std::ostream& stream,
 			    const ActionGrab& actionTrackingClient)
   {
-    return actionTrackingClient.print (stream);
+    actionTrackingClient.print (stream);
+    return stream;
   }
 } // end of namespace trackingClient

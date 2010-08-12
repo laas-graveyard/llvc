@@ -22,4 +22,6 @@ ADD_HEADERS(
 		llvc/action-tracking-mbt.h
                 llvc/action-display.h
                 llvc/action-display-mbt.h
+                llvc/tools/indent.hh
+                llvc/tools/visp-io.hh
 )

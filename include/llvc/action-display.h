@@ -1,11 +1,12 @@
-// -*- c++-mode -*-
-/*! ----------------------------------------------------
- *  Copyright 2010, CNRS-AIST JRL
- *
- *  \brief  Base class for all the tracking algorithm client side
- *  when launched, the client overwrite the server parameters
- * client and server are always synchronized
- * ---------------------------------------------------- */
+// Copyright (C) 2010 by Claire Dune, Thomas Moulard, CNRS.
+//
+// This file is part of the LLVC.
+//
+// This software is provided "as is" without warranty of any kind,
+// either expressed or implied, including but not limited to the
+// implied warranties of fitness for a particular purpose.
+//
+// See the COPYING file for more information.
 
 #ifndef DISPLAY_TRACKING_CLIENT_H_
 # define DISPLAY_TRACKING_CLIENT_H
@@ -33,23 +34,31 @@ namespace trackingClient
     ///
     /// \param gc shared pointer to grabbing client
     ActionDisplay(boost::shared_ptr<ActionGrab> gc);
-    ~ActionDisplay();
+    virtual ~ActionDisplay();
 
     void display();
     virtual void initClick();
     virtual bool Initialize();
     virtual bool ExecuteAction();
     virtual void CleanUp();
+
+    virtual std::ostream& print (std::ostream& stream) const;
    private:
     /// Pointer to LLVS server.
     LowLevelVisionSystem_var m_LLVS;
+  protected:
     /// Grabber pointer.
     boost::shared_ptr<ActionGrab> m_actionGrabClient;
+  protected:
     /// Grabbed image copy.
     vpImage<unsigned char> m_image;
+  private:
     /// ViSP display to show image.
     vpDisplayX m_display;
   };
+
+  std::ostream& operator <<(std::ostream& stream,
+			    const ActionDisplay& actionDisplay);
 } // end of namespace trackingClient
 
 #endif  // DISPLAY_TRACKING_CLIENT_H_

@@ -19,3 +19,13 @@ ADD_LLV_CLIENT(
   COMPILE_FLAGS
   "-g -Wall -fexceptions "
   )
+
+ADD_LLV_CLIENT(
+  ${PROJECT_NAME}-tracking
+  SOURCES
+	llvc-tracking.cpp
+  LINK_WITH
+	${PROJECT_NAME}
+  COMPILE_FLAGS
+  "-g -Wall -fexceptions "
+  )

@@ -1,6 +1,12 @@
-/*! ----------------------------------------------------
- *  Copyright 2010, CNRS-AIST JRL
- * ---------------------------------------------------- */
+// Copyright (C) 2010 by Claire Dune, Thomas Moulard, CNRS.
+//
+// This file is part of the LLVC.
+//
+// This software is provided "as is" without warranty of any kind,
+// either expressed or implied, including but not limited to the
+// implied warranties of fitness for a particular purpose.
+//
+// See the COPYING file for more information.
 
 #ifndef ACTION_TRACKING_CLIENT_H_
 # define ACTION_TRACKING_CLIENT_H_
@@ -8,7 +14,7 @@
 # include <iosfwd>
 # include <string>
 # include <vector>
-
+# include <utility>
 # include <boost/shared_ptr.hpp>
 
 # include <visp/vpHomogeneousMatrix.h>
@@ -20,6 +26,7 @@
 # include <llvs/tools/ActionWithLLVSBase.h>
 
 # include <llvc/action-grab.h>
+# include <llvc/tools/visp-io.hh>
 
 namespace trackingClient
 {
@@ -45,7 +52,8 @@ namespace trackingClient
     /// If necessary, please rebuild an ActionTracking.
     ///
     /// \param processName process name on \bf server side
-    ActionTracking(const std::string& processName);
+    ActionTracking(const std::string& processName,
+		   boost::shared_ptr<ActionGrab> actionGrab);
     virtual ~ActionTracking();
 
     const paramList_t& getParamList()
@@ -65,20 +73,22 @@ namespace trackingClient
     /// \param paramValue parameter value
     void setTrackingParameters(std::string paramName, std::string paramValue);
 
-    virtual void impl_setTrackingParameters(std::string paramName,
-					    std::string paramValue) = 0;
+    void getServerParameters();
+    void readParameters();
+    void readParameters(const std::string& filename);
+
+
 
     const std::string m_serverProcessName;
 
  protected:
-    virtual void track() = 0;
-
-  private:
     /// Pointer to LLVS server.
     LowLevelVisionSystem_var m_LLVS;
+  private:
     /// Parameters list.
     paramList_t m_paramList;
-    /// Pointer to grabbing client.
+  protected:
+   /// Pointer to grabbing client.
     boost::shared_ptr<ActionGrab> m_grabClient;
   };
 
@@ -86,5 +96,7 @@ namespace trackingClient
 			    const ActionTracking::paramList_t& paramList);
   std::ostream& operator <<(std::ostream& stream,
 			    const ActionTracking& actionTrackingClient);
-}
+
+} // end of namespace trackingClient.
+
 #endif

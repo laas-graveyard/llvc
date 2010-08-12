@@ -1,8 +1,12 @@
-// -*- c++-mode -*-
-/*! ----------------------------------------------------
- *  Copyright 2010, CNRS-AIST JRL
- *
- * ---------------------------------------------------- */
+// Copyright (C) 2010 by Claire Dune, Thomas Moulard, CNRS.
+//
+// This file is part of the LLVC.
+//
+// This software is provided "as is" without warranty of any kind,
+// either expressed or implied, including but not limited to the
+// implied warranties of fitness for a particular purpose.
+//
+// See the COPYING file for more information.
 
 #ifndef ACTION_GRAB_CLIENT_H_
 # define ACTION_GRAB_CLIENT_H_
@@ -12,6 +16,7 @@
 
 # include <visp/vpHomogeneousMatrix.h>
 # include <visp/vpImage.h>
+# include <visp/vpCameraParameters.h>
 
 # include <LowLevelVisionSystem.hh>
 
@@ -44,10 +49,17 @@ namespace trackingClient
     virtual bool ExecuteAction();
     virtual void CleanUp();
 
-    const image_t& image() const
+    const vpCameraParameters& camera() const
+    {
+      return m_cam;
+    }
+
+   const image_t& image() const
     {
       return m_image;
     }
+
+
 
   private:
     /// Pointer to the server LLVS.
@@ -58,6 +70,11 @@ namespace trackingClient
     long m_cameraID;
     /// Image format.
     std::string m_format;
+
+    //FIXME: for now this is not synchronized with server-side.
+    /// Visp camera parameters
+    vpCameraParameters m_cam;
+
   };
 
   std::ostream& operator <<(std::ostream& stream,

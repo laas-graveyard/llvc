@@ -17,6 +17,8 @@ ADD_LLV_CLIENT(
 	action-tracking-mbt.cpp
 	action-display.cpp
 	action-display-mbt.cpp
+	tools/indent.cc
+	tools/visp-io.cc
   COMPILE_FLAGS
   "-g -Wall -fexceptions "
   )
