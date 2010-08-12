@@ -5,30 +5,28 @@
 #include <LLVC/ActionGrabClient.h>
 #include <LLVC/DisplayTrackingClient.h>
 
+using namespace trackingClient;
+
 int main ()
 {
-  trackingClient::ActionGrabClient client;
-  trackingClient::DisplayTrackingClient displayClient;
+  boost::shared_ptr<ActionGrabClient> client_ptr(new ActionGrabClient);
+  DisplayTrackingClient displayClient(client_ptr);
+  client_ptr->Initialize();
+  displayClient.Initialize();
 
-  std::cout << client << std::endl;
-  //std::cout << displayClient << std::endl;
-
-  vpImage<unsigned char> I = client.image ();
-  vpDisplayX display (I,100,100,"Grabbed image");
-
-  client.Initialize ();
   try
     {
-      client.ExecuteAction ();
+      client_ptr->ExecuteAction ();
+      displayClient.ExecuteAction ();
     }
   catch (char* str)
     {
       std::cout << str << std::endl;
     }
-  I = client.image ();
-  vpDisplay::display(I);
-  vpDisplay::flush(I);
-  vpDisplay::getClick(I);
 
-  client.CleanUp ();
+
+  displayClient.CleanUp();
+  client_ptr->CleanUp ();
+
+  return 0;
 }

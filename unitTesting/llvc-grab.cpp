@@ -1,16 +1,13 @@
 #include <iostream>
 
 #include <LLVC/ActionGrabClient.h>
-#include <LLVC/DisplayTrackingClient.h>
+#include <visp/vpDisplayX.h>
 
 int main ()
 {
   trackingClient::ActionGrabClient client;
-  trackingClient::DisplayTrackingClient displayClient;
 
   std::cout << client << std::endl;
-  //std::cout << displayClient << std::endl;
-
   vpImage<unsigned char> I = client.image ();
   vpDisplayX display (I,100,100,"Grabbed image");
 
@@ -29,4 +26,5 @@ int main ()
   vpDisplay::getClick(I);
 
   client.CleanUp ();
+  return 0;
 }
