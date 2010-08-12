@@ -1,11 +1,12 @@
 #include <iostream>
 
-#include <LLVC/ActionGrabClient.h>
+#include <llvc/action-grab.h>
+
 #include <visp/vpDisplayX.h>
 
 int main ()
 {
-  trackingClient::ActionGrabClient client;
+  trackingClient::ActionGrab client;
 
   std::cout << client << std::endl;
   vpImage<unsigned char> I = client.image ();

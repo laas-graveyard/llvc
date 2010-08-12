@@ -5,7 +5,7 @@
 
 #include <iostream>
 #include <fstream>
-#include "LLVC/ActionGrabClient.h"
+#include "llvc/action-grab.h"
 #include "LowLevelVisionSystem.hh"
 
 
@@ -33,7 +33,7 @@ namespace trackingClient
   }
 
 
-  ActionGrabClient::ActionGrabClient()
+  ActionGrab::ActionGrab()
     : LLVClient::ActionWithLLVSBase(),
       m_LLVS(GetServicePort<LowLevelVisionSystem,
 	     LowLevelVisionSystem_var>()),
@@ -80,28 +80,28 @@ namespace trackingClient
     m_image.resize(imHeight,imWidth);
   }
 
-  ActionGrabClient::~ActionGrabClient()
+  ActionGrab::~ActionGrab()
   {
     m_LLVS->StopProcess("IEEE1394 Image grabbing");
     m_LLVS->StopProcess("vispUndistordedProcess");
   }
 
   std::ostream&
-  ActionGrabClient::print (std::ostream& stream) const
+  ActionGrab::print (std::ostream& stream) const
   {
-    stream << "ActionGrabClient:" << std::endl
+    stream << "ActionGrab:" << std::endl
 	   << "\t camera id: " << m_cameraID << std::endl;
     return stream;
   }
 
   bool
-  ActionGrabClient::Initialize()
+  ActionGrab::Initialize()
   {
     return true;
   }
 
   bool
-  ActionGrabClient::ExecuteAction()
+  ActionGrab::ExecuteAction()
   {
     ImageData_var corbaImage;
     m_LLVS->TriggerSynchro();
@@ -116,12 +116,12 @@ namespace trackingClient
   }
 
   void
-  ActionGrabClient::CleanUp()
+  ActionGrab::CleanUp()
   {
   }
 
   std::ostream& operator <<(std::ostream& stream,
-			    const ActionGrabClient& actionTrackingClient)
+			    const ActionGrab& actionTrackingClient)
   {
     return actionTrackingClient.print (stream);
   }

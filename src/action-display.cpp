@@ -3,32 +3,27 @@
  *
  * ---------------------------------------------------- */
 
-#include "LLVC/DisplayTrackingClient.h"
+#include "llvc/action-display.h"
 
 namespace trackingClient
 {
-  DisplayTrackingClient::DisplayTrackingClient
-  (boost::shared_ptr<ActionGrabClient> gc)
+  ActionDisplay::ActionDisplay
+  (boost::shared_ptr<ActionGrab> gc)
     : LLVClient::ActionWithLLVSBase(),
-      m_display(),
-      m_image(),
       m_LLVS(GetServicePort<LowLevelVisionSystem,
 	     LowLevelVisionSystem_var>()),
-      m_actionGrabClient(gc)
+      m_actionGrabClient(gc),
+      m_image(m_actionGrabClient->image()),
+      m_display(m_image,10,10,"DisplayTracking")
 
   {
-
-    m_image=m_actionGrabClient->image();
-    m_display.init(m_image,10,10,"DisplayTracking");
-
-
   }
 
-  DisplayTrackingClient::~DisplayTrackingClient()
+  ActionDisplay::~ActionDisplay()
   {}
 
   void
-  DisplayTrackingClient::display()
+  ActionDisplay::display()
   {
 
     vpDisplay::display(m_image);
@@ -36,19 +31,18 @@ namespace trackingClient
 
   }
 
-  void DisplayTrackingClient::initClick()
+  void ActionDisplay::initClick()
   {
   }
 
   bool
-  DisplayTrackingClient::Initialize()
+  ActionDisplay::Initialize()
   {
-
     return true;
   }
 
   bool
-  DisplayTrackingClient::ExecuteAction()
+  ActionDisplay::ExecuteAction()
   {
     m_image=m_actionGrabClient->image();
     display();
@@ -56,12 +50,10 @@ namespace trackingClient
   }
 
   void
-  DisplayTrackingClient::CleanUp()
+  ActionDisplay::CleanUp()
   {
-    std::cout << "USER >> Click to kill DisplayTrackingClient" << std::endl;
-
+    std::cout << "USER >> Click to kill ActionDisplay" << std::endl;
     vpDisplay::getClick(m_image);
-
   }
 
 } // end of namespace trackingClient

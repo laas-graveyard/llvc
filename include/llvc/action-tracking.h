@@ -9,6 +9,8 @@
 # include <string>
 # include <vector>
 
+# include <boost/shared_ptr.hpp>
+
 # include <visp/vpHomogeneousMatrix.h>
 # include <visp/vpImage.h>
 
@@ -17,13 +19,16 @@
 # include <llvs/tools/CORBAClient.h>
 # include <llvs/tools/ActionWithLLVSBase.h>
 
+# include <llvc/action-grab.h>
+
 namespace trackingClient
 {
 
   /// \brief Base class for all the tracking algorithm client side
-  /// WARNING when launched, the client overwrite the server parameters
+  ///
+  /// \warning When launched, the client overwrite the server parameters
   /// client and server are always synchronized.
-  class ActionTrackingClient : public LLVClient::ActionWithLLVSBase
+  class ActionTracking : public LLVClient::ActionWithLLVSBase
   {
   public:
     typedef std::vector< std::pair<std::string,std::string> > paramList_t;
@@ -37,27 +42,18 @@ namespace trackingClient
     ///
     /// \warning This class makes the assumption that the current
     /// camera and/or the camera size will never be changed at runtime.
-    /// If necessary, please rebuild an ActionTrackingClient.
+    /// If necessary, please rebuild an ActionTracking.
     ///
     /// \param processName process name on \bf server side
-    ActionTrackingClient(const std::string& processName);
-    virtual ~ActionTrackingClient();
-
-    //void setParamList(const paramList_t& p){m_paramList=p;}
+    ActionTracking(const std::string& processName);
+    virtual ~ActionTracking();
 
     const paramList_t& getParamList()
     {
       return m_paramList;
     }
 
-    const image_t& getImage()
-    {
-      return m_image;
-    }
-
     virtual std::ostream& print (std::ostream& stream) const;
-
-
 
     /// \brief Set tracking parameter on both client and server sides.
     ///
@@ -72,46 +68,23 @@ namespace trackingClient
     virtual void impl_setTrackingParameters(std::string paramName,
 					    std::string paramValue) = 0;
 
-    const image_t& image() const
-    {
-      return m_image;
-    }
-
     const std::string m_serverProcessName;
 
  protected:
-    image_t& image()
-    {
-      return m_image;
-    }
-
-    virtual void grabImageServer();
     virtual void track() = 0;
 
-
-
   private:
-    /*! Get the data from the bufer on LLVS. */
-    // int getServerLog( ModelTrackerInterface_var aMTI,
-    //		      vpImage<unsigned char> &aIvisp,
-    //		      vpHomogeneousMatrix &acMo,
-    //	      std::pair <long,long> &TimeStamp);
-
-    /*! \brief Pointer to the server LLVS. */
+    /// Pointer to LLVS server.
     LowLevelVisionSystem_var m_LLVS;
-
-    // list the parameters that have been set
+    /// Parameters list.
     paramList_t m_paramList;
-
-    image_t m_image;
-
-    long m_cameraID;
-    std::string m_format;
+    /// Pointer to grabbing client.
+    boost::shared_ptr<ActionGrab> m_grabClient;
   };
 
   std::ostream& operator <<(std::ostream& stream,
-			    const ActionTrackingClient::paramList_t& paramList);
+			    const ActionTracking::paramList_t& paramList);
   std::ostream& operator <<(std::ostream& stream,
-			    const ActionTrackingClient& actionTrackingClient);
+			    const ActionTracking& actionTrackingClient);
 }
 #endif

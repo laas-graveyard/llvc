@@ -2,15 +2,15 @@
 
 #include <iostream>
 
-#include <LLVC/ActionGrabClient.h>
-#include <LLVC/DisplayTrackingClient.h>
+#include <llvc/action-grab.h>
+#include <llvc/action-display.h>
 
 using namespace trackingClient;
 
 int main ()
 {
-  boost::shared_ptr<ActionGrabClient> client_ptr(new ActionGrabClient);
-  DisplayTrackingClient displayClient(client_ptr);
+  boost::shared_ptr<ActionGrab> client_ptr(new ActionGrab);
+  ActionDisplay displayClient(client_ptr);
   client_ptr->Initialize();
   displayClient.Initialize();
 

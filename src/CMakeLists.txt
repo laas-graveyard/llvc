@@ -12,9 +12,11 @@ ADD_LLV_CLIENT(
   ${PROJECT_NAME}
   SHARED LIBRARY
   SOURCES
-	ActionGrabClient.cpp
-	ActionTrackingClient.cpp
-	DisplayTrackingClient.cpp
+	action-grab.cpp
+	action-tracking.cpp
+	action-tracking-mbt.cpp
+	action-display.cpp
+	action-display-mbt.cpp
   COMPILE_FLAGS
   "-g -Wall -fexceptions "
   )

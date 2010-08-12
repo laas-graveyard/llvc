@@ -9,38 +9,46 @@
 
 #ifndef DISPLAY_TRACKING_CLIENT_H_
 # define DISPLAY_TRACKING_CLIENT_H
-
 # include <boost/shared_ptr.hpp>
+
+# include <visp/vpDisplayX.h>
+# include <visp/vpImage.h>
 
 # include <llvs/tools/ActionWithLLVSBase.h>
 
+# include <LowLevelVisionSystem.hh>
 
-# include <LLVC/ActionGrabClient.h>
-# include <visp/vpDisplayX.h>
+# include <llvc/action-grab.h>
 
 namespace trackingClient
 {
-  /*! \brief Class to get connected to a remote corba client providing
-    bipedal walking capabilities. */
-  class DisplayTrackingClient : public LLVClient::ActionWithLLVSBase
+  /// \brief Generic display class.
+  ///
+  /// This class implements generic behavior for all displayers
+  /// independently from the underlying algorithm (i.e. ActionTracking class).
+  class ActionDisplay : public LLVClient::ActionWithLLVSBase
   {
   public:
-    DisplayTrackingClient(boost::shared_ptr<ActionGrabClient> gc);
-    ~DisplayTrackingClient();
+    /// \brief Create a display from a grabbing client.
+    ///
+    /// \param gc shared pointer to grabbing client
+    ActionDisplay(boost::shared_ptr<ActionGrab> gc);
+    ~ActionDisplay();
+
     void display();
     virtual void initClick();
     virtual bool Initialize();
     virtual bool ExecuteAction();
     virtual void CleanUp();
    private:
-
-
-    vpDisplayX m_display;
-    vpImage<unsigned char> m_image;
+    /// Pointer to LLVS server.
     LowLevelVisionSystem_var m_LLVS;
-    boost::shared_ptr<ActionGrabClient> m_actionGrabClient;
-
-
+    /// Grabber pointer.
+    boost::shared_ptr<ActionGrab> m_actionGrabClient;
+    /// Grabbed image copy.
+    vpImage<unsigned char> m_image;
+    /// ViSP display to show image.
+    vpDisplayX m_display;
   };
 } // end of namespace trackingClient
 
