@@ -66,11 +66,11 @@ namespace trackingClient
    const std::string& modelName,
    const std::string& configurationName)
     : ActionTracking("nmbtTrackingProcess", actionGrab),
+      m_cMo(cMo),
       m_modelName(modelName),
       m_configurationName(configurationName)
   {
-
-   ModelTrackerInterface::HomogeneousMatrix_var cMoCorba;
+    ModelTrackerInterface::HomogeneousMatrix_var cMoCorba;
     convertViSPHomogeneousMatrixToCorba(cMo, cMoCorba);
 
     ModelTrackerInterface_var serverTracker;
@@ -80,7 +80,7 @@ namespace trackingClient
     setTrackingParameters
       ("PATH_MODEL", getModelFileFromModelName (m_modelName));
     readParameters();
- }
+  }
 
   ActionTrackingMbt::~ActionTrackingMbt()
   {
@@ -105,15 +105,31 @@ namespace trackingClient
 
   bool ActionTrackingMbt::Initialize()
   {
-    return true;
+
+    return ActionTracking::Initialize();
   }
 
   bool ActionTrackingMbt::ExecuteAction()
   {
+    int Verbose = 0;
+    m_LLVS->TriggerSynchro();
+
     ModelTrackerInterface::HomogeneousMatrix_var cMoCorba;
     ModelTrackerInterface_var serverTracker =
       m_LLVS->getModelTracker();
     serverTracker->GetcMo(cMoCorba);
+
+    if (Verbose>2)
+      {
+	for (int i=0 ; i < 4 ; ++i)
+	  {
+	    for (int j=0 ; j < 4 ; ++j)
+	      std::cout << cMoCorba->cMo[i][j] << " ";
+	    std::cout << std::endl;
+	  }
+      }
+
+
     convertCorbaHomogeneousMatrixToVisp(cMoCorba, m_cMo);
     return true;
   }
