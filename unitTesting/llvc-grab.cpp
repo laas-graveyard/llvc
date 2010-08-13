@@ -20,7 +20,7 @@ using namespace trackingClient;
 
 int main ()
 {
-  trackingClient::ActionGrab client;
+  trackingClient::ActionGrab client(true);
 
   std::cout << client << iendl;
   vpImage<unsigned char> I = client.image ();

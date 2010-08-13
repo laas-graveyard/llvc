@@ -22,14 +22,20 @@ int main ()
   ActionDisplay displayClient(client);
   client->Initialize();
   displayClient.Initialize();
-  
+      
   std::cout << *client << iendl
 	    << displayClient << iendl;
 
-  client->ExecuteAction ();
-  displayClient.ExecuteAction ();
-
-  displayClient.CleanUp();
+ int iter =0;
+ int nbIter=30000;
+ while(++iter<nbIter)
+   {	
+     std::cout << "Image " << iter << std::endl;
+	client->ExecuteAction ();
+	displayClient.ExecuteAction ();
+	usleep(3300);
+   }
+ displayClient.CleanUp();
   client->CleanUp ();
 
   return 0;

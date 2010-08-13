@@ -17,31 +17,59 @@
 #include <llvc/tools/indent.hh>
 
 #include <visp/vpDisplayX.h>
-
+   
 using namespace trackingClient;
 
-int main ()
+int main ()  
 {
   vpHomogeneousMatrix cMo;
 
-  boost::shared_ptr<ActionGrab> clientGrab
-    (new ActionGrab);
+  int Verbose = 0;
+
+  ODEBUG3("\n1. Construct Grabber\n");
+  // Start with TRIGGER_MODE
+  boost::shared_ptr<ActionGrab> clientGrab(new ActionGrab(true));
   assert (clientGrab);
-
+  
+  ODEBUG3("\n2. Initialize Grabber\n");
   clientGrab->Initialize();
+  if (Verbose>2)
+    std::cout << *clientGrab << std::endl;
+  
+  ODEBUG3("\n3. Execute Grabber\n");
   clientGrab->ExecuteAction();
-
+    
+  ODEBUG3("\n4. Construct Display\n");
   ActionDisplayMbt display(clientGrab, "ElectricWallFar", "default");
+  if (Verbose>2)
+    std::cout << *clientGrab << std::endl;
+  
+  ODEBUG3("\n4. Initialize Display\n");
   display.Initialize();
-  display.ExecuteAction();
+  
+  // Switch to FLOW
+  clientGrab->setTriggerMode(false);
 
-  for (unsigned i = 0; i < 4; ++i)
+  ODEBUG3("\n5. Execute Display\n");
+  display.ExecuteAction();
+  
+  ODEBUG3("\n6. Print all\n");
+  if (Verbose>2)
+    std::cout << *clientGrab << iendl
+	      << display << iendl;
+  
+  ODEBUG3("\n7. LOOP\n");
+  
+  unsigned int nbIter = 3000000;
+  for (unsigned i = 0; i < nbIter; ++i)
     {
-      std::cout << "Frame " << i << iendl;
+      if (Verbose>2)
+	std::cout << "Frame " << i << iendl;
       clientGrab->ExecuteAction();
       display.ExecuteAction();
-      std::cout << *clientGrab << iendl
-		<< display << iendl;
+      if (Verbose>2)
+	std::cout << *clientGrab << iendl
+		  << display << iendl;
     }
 
   display.CleanUp();
