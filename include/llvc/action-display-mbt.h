@@ -46,7 +46,7 @@ namespace trackingClient
     ActionDisplayMbt(boost::shared_ptr<ActionGrab> gc,
 		     const std::string& modelName,
 		     const std::string& configurationName,
-		     vpColor color = vpColor::red);
+		     vpColor color = vpColor::blue);
     virtual ~ActionDisplayMbt();
 
     virtual bool Initialize();
