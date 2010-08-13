@@ -41,16 +41,25 @@ namespace trackingClient
   }
 
 
-  ActionGrab::ActionGrab()
+  ActionGrab::ActionGrab(bool triggerMode)
     : LLVClient::ActionWithLLVSBase(),
+      m_triggerMode(triggerMode),
       m_LLVS(GetServicePort<LowLevelVisionSystem,
 	     LowLevelVisionSystem_var>()),
       m_image(),
       m_cameraID(3),
       m_format("RGB_VISPU8_NONE")
   {
+    ODEBUG3("triggerMode :" <<m_triggerMode);
+    if (m_triggerMode)
+      m_LLVS->SetSynchronizationMode(LowLevelVisionSystem::SYNCHRO_TRIGGER);
+    else
+      m_LLVS->SetSynchronizationMode(LowLevelVisionSystem::SYNCHRO_FLOW);
 
-    m_LLVS->SetSynchronizationMode(LowLevelVisionSystem::SYNCHRO_TRIGGER);
+    // Set triggering mode.
+    m_LLVS->TriggerSynchro();
+    sleep(2);
+    m_LLVS->TriggerSynchro();
 
     m_LLVS->SetAProcessParameterAndValue
       (CORBA::string_dup("IEEE1394 Image grabbing"),
@@ -107,6 +116,15 @@ namespace trackingClient
     m_LLVS->StopProcess("vispUndistordedProcess");
   }
 
+  void ActionGrab::setTriggerMode(bool atriggerMode)
+  {
+    m_triggerMode = atriggerMode;
+    if (m_triggerMode)
+      m_LLVS->SetSynchronizationMode(LowLevelVisionSystem::SYNCHRO_TRIGGER);
+    else
+      m_LLVS->SetSynchronizationMode(LowLevelVisionSystem::SYNCHRO_FLOW);
+  }
+
   std::ostream&
   ActionGrab::print (std::ostream& stream) const
   {
@@ -128,11 +146,13 @@ namespace trackingClient
   ActionGrab::ExecuteAction()
   {
     ImageData_var corbaImage;
-    m_LLVS->TriggerSynchro();
+    if (m_triggerMode)
+      m_LLVS->TriggerSynchro();
 
     CORBA::Long cameraId(m_cameraID);
     CORBA::String_var format = CORBA::string_dup(m_format.c_str());
-    sleep(1);
+    if (m_triggerMode)
+      sleep(1);
     m_LLVS->getRectifiedImage(cameraId, corbaImage);
 
     convertCorbaImageToVispImage(corbaImage, m_image);

@@ -36,46 +36,51 @@ namespace trackingClient
   /// to avoid premature stopping of the grabbing vision
   /// processes on server-side.
   class ActionGrab : public LLVClient::ActionWithLLVSBase
-  {
-  public:
-    /// Alias to ViSP image type.
-    typedef vpImage<unsigned char> image_t;
-
-    explicit ActionGrab();
-    virtual ~ActionGrab();
-    virtual std::ostream& print (std::ostream& stream) const;
-
-    virtual bool Initialize();
-    virtual bool ExecuteAction();
-    virtual void CleanUp();
-
-    const vpCameraParameters& camera() const
     {
-      return m_cam;
-    }
+    public:
+      /// Alias to ViSP image type.
+      typedef vpImage<unsigned char> image_t;
 
-   const image_t& image() const
-    {
-      return m_image;
-    }
+      explicit ActionGrab(bool triggerMode = false);
+      virtual ~ActionGrab();
+      virtual std::ostream& print (std::ostream& stream) const;
+
+      virtual bool Initialize();
+      virtual bool ExecuteAction();
+      virtual void CleanUp();
+      
+      void setTriggerMode(bool atriggerMode);
+
+      const vpCameraParameters& camera() const
+      {
+	return m_cam;
+      }
+
+      const image_t& image() const
+	{
+	  return m_image;
+	}
 
 
 
-  private:
-    /// Pointer to the server LLVS.
-    LowLevelVisionSystem_var m_LLVS;
-    /// Grabbed image.
-    image_t m_image;
-    /// Semantic camera id.
-    long m_cameraID;
-    /// Image format.
-    std::string m_format;
+    private:
+      /// Enable trigger mode for grabbing.
+      bool m_triggerMode;
 
-    //FIXME: for now this is not synchronized with server-side.
-    /// Visp camera parameters
-    vpCameraParameters m_cam;
+      /// Pointer to the server LLVS.
+      LowLevelVisionSystem_var m_LLVS;
+      /// Grabbed image.
+      image_t m_image;
+      /// Semantic camera id.
+      long m_cameraID;
+      /// Image format.
+      std::string m_format;
+   
+      //FIXME: for now this is not synchronized with server-side.
+      /// Visp camera parameters
+      vpCameraParameters m_cam;
 
-  };
+    };
 
   std::ostream& operator <<(std::ostream& stream,
 			    const ActionGrab& actionTrackingClient);
