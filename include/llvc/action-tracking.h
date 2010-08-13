@@ -78,6 +78,8 @@ namespace trackingClient
     void readParameters(const std::string& filename);
 
 
+    virtual bool Initialize();
+
 
     const std::string m_serverProcessName;
 

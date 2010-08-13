@@ -31,14 +31,26 @@ namespace trackingClient
   {
     assert (actionGrab);
     getServerParameters();
-    m_LLVS->StartProcess(m_serverProcessName.c_str());
+
   }
 
   ActionTracking::~ActionTracking()
   {
-
+    m_LLVS->StopProcess("CircularModelTrackerData");
     m_LLVS->StopProcess(m_serverProcessName.c_str());
   }
+
+  bool
+  ActionTracking::Initialize()
+  {
+
+    ODEBUG("Go trhough initialise Action Tracking");
+    m_LLVS->StartProcess(m_serverProcessName.c_str());
+    m_LLVS->StartProcess("CircularModelTrackerData");
+    sleep(1);
+    return true;
+  }
+
 
   //FIXME: fill by default the paramList. As the server side
   //is only filled after a set.
