@@ -25,11 +25,18 @@ namespace trackingClient
   {
     m_actionGrabClient->ExecuteAction();
     m_image = m_actionGrabClient->image();
-    ActionDisplay::ExecuteAction();
+    vpDisplay::display(m_image);
+    vpDisplay::flush(m_image);
+
+    // set the client tracker parameters
+    // warning : if the parameters of the camera are not set,
+    // the computation of the pose is false.
+    // so we have to set the tracker parameters
+    vpCameraParameters cam = m_actionGrabClient->camera();
+    m_tracker.setCameraParameters(cam);
+    m_tracker.loadModel(getModelFileFromModelName (modelName).c_str());
     m_tracker.initClick(m_image, getInitFileFromModelName(modelName).c_str());
     m_tracker.getPose(m_initialPose);
-    m_tracker.loadModel(getModelFileFromModelName (modelName).c_str());
-
     m_trackingClient =
       boost::shared_ptr<ActionTrackingMbt>
       (new ActionTrackingMbt
@@ -47,6 +54,7 @@ namespace trackingClient
   {
     m_trackingClient->Initialize();
     return ActionDisplay::Initialize();
+
   }
 
   bool ActionDisplayMbt::ExecuteAction()
@@ -58,8 +66,12 @@ namespace trackingClient
     // was handled correctly by vpMbtTracker.
     vpCameraParameters cam = m_actionGrabClient->camera();
     vpHomogeneousMatrix cMo = m_trackingClient->pose();
+
+    if (!ActionDisplay::ExecuteAction())
+      return false;
     m_tracker.display (m_image, cMo, cam, m_color);
-    return ActionDisplay::ExecuteAction();
+    vpDisplay::flush(m_image);
+    return true;
   }
 
   void ActionDisplayMbt::CleanUp()
