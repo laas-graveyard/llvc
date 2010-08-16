@@ -80,6 +80,11 @@ namespace trackingClient
 
     virtual bool Initialize();
 
+    boost::shared_ptr<ActionGrab> grabClient()
+    {
+      return m_grabClient;
+    }
+
 
     const std::string m_serverProcessName;
 
