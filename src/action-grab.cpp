@@ -41,16 +41,19 @@ namespace trackingClient
   }
 
 
-  ActionGrab::ActionGrab(bool triggerMode)
+  ActionGrab::ActionGrab(bool rectification,
+			 bool triggerMode)
     : LLVClient::ActionWithLLVSBase(),
       m_triggerMode(triggerMode),
       m_LLVS(GetServicePort<LowLevelVisionSystem,
 	     LowLevelVisionSystem_var>()),
       m_image(),
       m_cameraID(3),
-      m_format("RGB_VISPU8_NONE")
+      m_format((rectification)
+	       ? "RGB_VISPU8" : "RGB_VISPU8_NONE")
   {
     ODEBUG3("triggerMode :" <<m_triggerMode);
+    ODEBUG3("format :" <<m_format);
     if (m_triggerMode)
       m_LLVS->SetSynchronizationMode(LowLevelVisionSystem::SYNCHRO_TRIGGER);
     else
