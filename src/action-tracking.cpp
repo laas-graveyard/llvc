@@ -168,5 +168,4 @@ namespace trackingClient
     return stream;
   }
 
-
 } // end of namespace trackingClient

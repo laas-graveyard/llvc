@@ -40,6 +40,7 @@ namespace trackingClient
   public:
     typedef std::vector< std::pair<std::string,std::string> > paramList_t;
     typedef vpImage<unsigned char> image_t;
+    typedef std::pair<long, long> timestamp_t;
 
     /// \brief Construct the class using its server process name.
     ///
@@ -84,7 +85,6 @@ namespace trackingClient
     {
       return m_grabClient;
     }
-
 
     const std::string m_serverProcessName;
 

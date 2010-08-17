@@ -34,6 +34,24 @@ namespace trackingClient
   /// \brief Compute the VRML path from the model name.
   std::string getModelFileFromModelName (const std::string& modelName);
 
+
+  void convertViSPHomogeneousMatrixToCorba
+  (const vpHomogeneousMatrix& visp,
+   ModelTrackerInterface::HomogeneousMatrix_var& corba);
+
+  void convertCorbaHomogeneousMatrixToVisp
+  (const ModelTrackerInterface::HomogeneousMatrix_var& corba,
+   vpHomogeneousMatrix& visp);
+
+  void convertViSPHomogeneousMatrixToCorba
+  (const vpHomogeneousMatrix& visp,
+   ModelTrackerInterface::HomogeneousMatrix& corba);
+
+  void convertCorbaHomogeneousMatrixToVisp
+  (const ModelTrackerInterface::HomogeneousMatrix& corba,
+   vpHomogeneousMatrix& visp);
+
+
   /// \brief Client for model-based tracker on LLVS.
   ///
   /// This client manages the process start/stop and the
@@ -41,9 +59,9 @@ namespace trackingClient
   /// It also exposes the current cMo to the outside.
   class ActionTrackingMbt : public ActionTracking
   {
-
-    typedef vpImage<unsigned char> image_t;
   public:
+    typedef vpImage<unsigned char> image_t;
+
     /// \brief Construct the class using its server process name.
     ///
     /// \param processName process name on \bf server side
@@ -64,6 +82,18 @@ namespace trackingClient
       return m_cMo;
     }
 
+    /// \brief Current pose retrieved from the server.
+    const image_t& image() const
+    {
+      return m_image;
+    }
+
+    /// \brief Current timestamp retrieved from the server.
+    const timestamp_t& timestamp() const
+    {
+      return m_timestamp;
+    }
+
     /// \brief Import readParameters from mother class.
     using ActionTracking::readParameters;
     /// \brief Read configuration file and initialize parameters.
@@ -81,9 +111,18 @@ namespace trackingClient
       return m_configurationName;
     }
 
+    void retrieveBufferData ();
+
   private:
     /// Current pose retrieved from the server.
     vpHomogeneousMatrix m_cMo;
+    /// Image retrieved from debugInfoData.
+    image_t m_image;
+
+    //FIXME: search what it means.
+    /// Timestamps.
+    timestamp_t m_timestamp;
+
     /// Model name in the database.
     const std::string m_modelName;
     /// Configuration profile for the wanted model.

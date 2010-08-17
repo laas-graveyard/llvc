@@ -25,6 +25,19 @@
 
 namespace trackingClient
 {
+  // FIXME: move this elsewhere.
+  /// \brief Convert Corba image to ViSP image.
+  ///
+  /// Throw if the image sizes does not match.
+  ///
+  /// \param imageCorbaSrc Corba source image
+  /// \param imageVispDest ViSP destination image
+  void convertCorbaImageToVispImage(const ImageData_var& imageCorbaSrc,
+				    vpImage<unsigned char>& imageVispDest);
+  void convertCorbaImageToVispImage(const ImageData& imageCorbaSrc,
+				    vpImage<unsigned char>& imageVispDest);
+
+
   /// \brief Grab an image from LLVS and expose it publicly.
   ///
   /// This class holds the responsibility of starting

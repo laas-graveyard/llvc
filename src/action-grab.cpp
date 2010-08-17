@@ -21,13 +21,6 @@
 
 namespace trackingClient
 {
-  // FIXME: move this elsewhere.
-  /// \brief Convert Corba image to ViSP image.
-  ///
-  /// Throw if the image sizes does not match.
-  ///
-  /// \param imageCorbaSrc Corba source image
-  /// \param imageVispDest ViSP destination image
   void convertCorbaImageToVispImage(const ImageData_var& imageCorbaSrc,
 				    vpImage<unsigned char>& imageVispDest)
   {
@@ -38,6 +31,18 @@ namespace trackingClient
     unsigned char *pt =imageVispDest.bitmap;
     for(unsigned int l=0;l<imageCorbaSrc->octetData.length();++l)
       *pt++ = imageCorbaSrc->octetData[l];
+  }
+
+  void convertCorbaImageToVispImage(const ImageData& imageCorbaSrc,
+				    vpImage<unsigned char>& imageVispDest)
+  {
+    if (imageCorbaSrc.width - imageVispDest.getWidth() != 0
+	|| imageCorbaSrc.height - imageVispDest.getHeight() != 0)
+      throw "Invalid image size in convertCorbaImageToVispImage";
+
+    unsigned char *pt =imageVispDest.bitmap;
+    for(unsigned int l=0;l<imageCorbaSrc.octetData.length();++l)
+      *pt++ = imageCorbaSrc.octetData[l];
   }
 
 

@@ -46,7 +46,8 @@ namespace trackingClient
     ActionDisplayMbt(boost::shared_ptr<ActionGrab> gc,
 		     const std::string& modelName,
 		     const std::string& configurationName,
-		     vpColor color = vpColor::blue);
+		     vpColor color = vpColor::blue,
+		     bool logData = false);
     virtual ~ActionDisplayMbt();
 
     virtual bool Initialize();
@@ -86,6 +87,10 @@ namespace trackingClient
     /// \param stream stream used to display the instance informations
     /// \return stream
     virtual std::ostream& print (std::ostream& stream) const;
+
+    /// \brief Write current debug information on disk.
+    void logData() const;
+
   private:
     /// Tracking client.
     boost::shared_ptr<ActionTrackingMbt> m_trackingClient;
@@ -95,6 +100,8 @@ namespace trackingClient
     vpHomogeneousMatrix m_initialPose;
     /// Color used for model project on the image.
     vpColor m_color;
+    /// Should this class writes its data on disk?
+    bool m_logData;
   };
 } // end of namespace trackingClient
 

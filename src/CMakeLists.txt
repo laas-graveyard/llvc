@@ -20,5 +20,5 @@ ADD_LLV_CLIENT(
 	tools/indent.cc
 	tools/visp-io.cc
   COMPILE_FLAGS
-  "-g -Wall -fexceptions "
+  "-DCMAKE_INSTALL_PREFIX='\"${CMAKE_INSTALL_PREFIX}\"' -g -Wall -fexceptions "
   )
