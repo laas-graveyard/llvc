@@ -29,3 +29,13 @@ ADD_LLV_CLIENT(
   COMPILE_FLAGS
   "-g -Wall -fexceptions "
   )
+
+ADD_LLV_CLIENT(
+  ${PROJECT_NAME}-calibration
+  SOURCES
+	llvc-calibration.cpp
+  LINK_WITH
+	${PROJECT_NAME}
+  COMPILE_FLAGS
+  "-g -Wall -fexceptions "
+  )
