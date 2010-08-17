@@ -10,13 +10,6 @@
 cmake_minimum_required (VERSION 2.6.4)
 project (LLVC)
 
-# Project specific module files
-list (
-	APPEND 
-	CMAKE_MODULE_PATH 
-	$ENV{ROBOTPKG_BASE}/share/cmake
-)
-
 # Dependent packages
 find_package (
 	Modules
