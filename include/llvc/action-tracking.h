@@ -30,7 +30,6 @@
 
 namespace trackingClient
 {
-
   /// \brief Base class for all the tracking algorithm client side
   ///
   /// \warning When launched, the client overwrite the server parameters
