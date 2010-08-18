@@ -179,13 +179,13 @@ namespace trackingClient
     vpImage<vpRGBa> colorImage;
     vpDisplay::getImage(m_image, colorImage);
 
-    boost::format fmtColor("Ires-%04d.pgm");
+    boost::format fmtColor("Ires-%04d.ppm");
     fmtColor % index;
 
-    boost::format fmt("I-%04d.ppm");
+    boost::format fmt("I-%04d.pgm");
     fmt % index;
 
-    vpImageIo::writePGM(colorImage, makeLogFilename(fmtColor.str()));
-    vpImageIo::writePPM(image, makeLogFilename(fmt.str()));
+    vpImageIo::writePPM(colorImage, makeLogFilename(fmtColor.str()));
+    vpImageIo::writePGM(image, makeLogFilename(fmt.str()));
   }
 } // end of namespace trackingClient
