@@ -1,0 +1,107 @@
+// Copyright (C) 2010 by Claire Dune, Thomas Moulard, CNRS.
+//
+// This file is part of the LLVC.
+//
+// This software is provided "as is" without warranty of any kind,
+// either expressed or implied, including but not limited to the
+// implied warranties of fitness for a particular purpose.
+//
+// See the COPYING file for more information.
+
+#ifndef ACTION_TRACKING_KALMAN_H_
+# define ACTION_TRACKING_KALMAN_H_
+# include <iosfwd>
+# include <string>
+
+# include <boost/shared_ptr.hpp>
+
+# include <visp/vpMbtTracker.h>
+# include <visp/vpHomogeneousMatrix.h>
+
+
+# include <llvc/action-tracking.h>
+# include <llvc/action-tracking-mbt.h>
+
+namespace trackingClient
+{
+ 
+  /// \brief Client for model-based tracker on LLVS.
+  ///
+  /// This client manages the process start/stop and the
+  /// parameters synchronization and initialization.
+  /// It also exposes the current cMo to the outside.
+  class ActionTrackingKalman : public ActionTracking
+  {
+  public:
+    typedef vpImage<unsigned char> image_t;
+
+    /// \brief Construct the class using its server process name.
+    ///
+    /// \param processName process name on \bf server side
+    ActionTrackingKalman(const vpHomogeneousMatrix& cMoIn,
+		      boost::shared_ptr<ActionGrab> actionGrab,
+		      const std::string& modelName,
+		      const std::string& configurationName);
+    virtual ~ActionTrackingKalman();
+    virtual std::ostream& print (std::ostream& stream) const;
+
+    virtual bool Initialize();
+    virtual bool ExecuteAction();
+    virtual void CleanUp();
+
+    /// \brief Current pose retrieved from the server.
+    const vpHomogeneousMatrix& pose() const
+    {
+      return m_cMo;
+    }
+
+    /// \brief Current pose retrieved from the server.
+    const image_t& image() const
+    {
+      return m_image;
+    }
+
+    /// \brief Current timestamp retrieved from the server.
+    const timestamp_t& timestamp() const
+    {
+      return m_timestamp;
+    }
+
+    /// \brief Import readParameters from mother class.
+    using ActionTracking::readParameters;
+    /// \brief Read configuration file and initialize parameters.
+    void readParameters();
+
+    /// \brief Model name in the database.
+    const std::string& modelName() const
+    {
+      return m_modelName;
+    }
+
+    /// \brief Configuration profile for the wanted model.
+    const std::string& configurationName() const
+    {
+      return m_configurationName;
+    }
+
+    void retrieveBufferData ();
+
+  private:
+    /// Current pose retrieved from the server.
+    vpHomogeneousMatrix m_cMo;
+    /// Image retrieved from debugInfoData.
+    image_t m_image;
+
+    //FIXME: search what it means.
+    /// Timestamps.
+    timestamp_t m_timestamp;
+
+    /// Model name in the database.
+    const std::string m_modelName;
+    /// Configuration profile for the wanted model.
+    const std::string m_configurationName;
+  };
+
+} // end of namespace trackingClient.
+
+#endif // ! ACTION_TRACKING_MBT_H_
