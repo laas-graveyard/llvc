@@ -31,6 +31,16 @@ ADD_LLV_CLIENT(
   )
 
 ADD_LLV_CLIENT(
+  ${PROJECT_NAME}-tracking-kalman
+  SOURCES
+	llvc-tracking-kalman.cpp
+  LINK_WITH
+	${PROJECT_NAME}
+  COMPILE_FLAGS
+  "-g -Wall -fexceptions "
+  )
+
+ADD_LLV_CLIENT(
   ${PROJECT_NAME}-calibration
   SOURCES
 	llvc-calibration.cpp

@@ -113,6 +113,12 @@ then
     echo "copie distante des donnees du control ... " 
     scp ${repSourceDistantControl}/WalkTask-* ${repPath}/FromRobot
   
+    #create video from images
+    #echo " "
+    #echo "Create videos ... " 
+    
+
+
     # create the tar gz
     echo " "
     echo "Creation de l'archive ${tarName}.tar.gz"
@@ -124,7 +130,7 @@ then
     
     tar -czf  ${tarName}.tar.gz FromClient FromRobot --checkpoint=5000
     scp ${tarName}.tar.gz ${repSauvegardeDistant}
-
+    scp ${tarName}.tar.gz dune@jrlserver.muse.aist.go.jp:/home/dune/
     cd -
  
 else 

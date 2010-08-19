@@ -19,10 +19,12 @@ ADD_HEADERS(
 	FILES
 		llvc/action-grab.h
 		llvc/action-tracking.h
+                llvc/action-tracking-kalman.h
 		llvc/action-tracking-mbt.h
                 llvc/action-tracking-with-command.h
                 llvc/action-display.h
                 llvc/action-display-mbt.h
+                llvc/action-display-kalman.h
                 llvc/tools/indent.hh
                 llvc/tools/visp-io.hh
 )

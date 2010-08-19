@@ -98,17 +98,19 @@ namespace trackingClient
 
   void ActionTracking::getServerParameters()
   {
+
+    ODEBUG3("IN ActionTracking::getServerParameters()");
     HRP2LowLevelVisionParametersSeq_var paramNameSeq,paramValueSeq;
 
     m_LLVS->GetProcessParameters(m_serverProcessName.c_str(),
 				 paramNameSeq,
 				 paramValueSeq);
-
+    ODEBUG3("paramNameSeq->length()=" << paramNameSeq->length());
     for(unsigned i = 0 ; i < paramNameSeq->length(); ++i)
       {
 	std::string paramName(paramNameSeq[i]);
 	std::string paramValue(paramValueSeq[i]);
-
+        ODEBUG3("param server: "<< paramName <<"=" << paramValue);
 	searchPredicate pred(paramValue);
 	paramList_t::iterator it =
 	  std::find_if (m_paramList.begin (), m_paramList.end (), pred);
@@ -130,6 +132,7 @@ namespace trackingClient
        throw "File failed to open";
      else
        {
+	
  	int paramNb = 0;
  	configFile >> paramNb;
 
@@ -137,7 +140,7 @@ namespace trackingClient
 	  {
 	    std::string paramName,paramValue;
 	    configFile >> paramName >> paramValue;
-
+	    ODEBUG3("param file : "<< paramName <<"=" << paramValue);
 	    m_LLVS->SetAProcessParameterAndValue(m_serverProcessName.c_str(),
 						 paramName.c_str(),
 						 paramValue.c_str());
