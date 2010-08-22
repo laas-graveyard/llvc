@@ -9,6 +9,7 @@
 # Project declaration
 cmake_minimum_required (VERSION 2.6.4)
 project (LLVC)
+set(${PROJECT_NAME}_LIBRARY_NAME llvc-0)
 
 # Dependent packages
 find_package (
@@ -34,3 +35,4 @@ add_subdirectory (unitTesting)
 # Add uninstall target
 include(install-toolbox)
 ADD_UNINSTALL_TARGET()
+ADD_PKGCONFIG_FILE()
