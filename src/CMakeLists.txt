@@ -15,8 +15,11 @@ ADD_LLV_CLIENT(
 	action-grab.cpp
 	action-tracking.cpp
 	action-tracking-mbt.cpp
+	action-tracking-kalman.cpp
+	action-tracking-with-command.cpp
 	action-display.cpp
 	action-display-mbt.cpp
+	action-display-kalman.cpp
 	tools/indent.cc
 	tools/visp-io.cc
   COMPILE_FLAGS

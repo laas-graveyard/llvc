@@ -14,7 +14,7 @@
 
 #include <visp/vpImageIo.h>
 
-#include "llvc/action-display-mbt.h"
+#include "llvc/action-display-kalman.h"
 #include "llvc/tools/indent.hh"
 
 // CMAKE_INSTALL_PREFIX is used to know where
@@ -30,7 +30,7 @@ namespace trackingClient
   /// \brief Logging directory.
   static const std::string loggingDir = prefix + "/var/log";
 
-  ActionDisplayMbt::ActionDisplayMbt(boost::shared_ptr<ActionGrab> gc,
+  ActionDisplayKalman::ActionDisplayKalman(boost::shared_ptr<ActionGrab> gc,
 				     const std::string& modelName,
 				     const std::string& configurationName,
 				     vpColor color,
@@ -57,26 +57,26 @@ namespace trackingClient
     m_tracker.initClick(m_image, getInitFileFromModelName(modelName).c_str());
     m_tracker.getPose(m_initialPose);
     m_trackingClient =
-      boost::shared_ptr<ActionTrackingMbt>
-      (new ActionTrackingMbt
+      boost::shared_ptr<ActionTrackingKalman>
+      (new ActionTrackingKalman
        (m_initialPose,
 	gc,
 	modelName,
 	configurationName));
   }
 
-  ActionDisplayMbt::~ActionDisplayMbt()
+  ActionDisplayKalman::~ActionDisplayKalman()
   {
   }
 
-  bool ActionDisplayMbt::Initialize()
+  bool ActionDisplayKalman::Initialize()
   {
     m_trackingClient->Initialize();
     return ActionDisplay::Initialize();
 
   }
 
-  bool ActionDisplayMbt::ExecuteAction()
+  bool ActionDisplayKalman::ExecuteAction()
   {
 
     m_trackingClient->ExecuteAction();
@@ -84,12 +84,12 @@ namespace trackingClient
 
     //FIXME: send patch to enhance ViSP constness.
     // I.e. these copies would not be required if the constness
-    // was handled correctly by vpMbtTracker.
+    // was handled correctly by vpKalmanTracker.
     vpCameraParameters cam = m_actionGrabClient->camera();
     vpHomogeneousMatrix cMo = m_trackingClient->pose();
 
     //FIXME: we do *not* grab using the grabbing
-    //client anymore as ActionTrackingMbt::getBufferData
+    //client anymore as ActionTrackingKalman::getBufferData
     //is giving us a synchronized image.
     //if (!ActionDisplay::ExecuteAction())
     // return false;
@@ -103,18 +103,18 @@ namespace trackingClient
     return true;
   }
 
-  void ActionDisplayMbt::CleanUp()
+  void ActionDisplayKalman::CleanUp()
   {
     m_trackingClient->CleanUp();
     ActionDisplay::CleanUp();
   }
 
   std::ostream&
-  ActionDisplayMbt::print (std::ostream& stream) const
+  ActionDisplayKalman::print (std::ostream& stream) const
   {
     ActionDisplay::print (stream);
     stream << iendl
-	   << "ActionDisplayMbt:" << incindent << iendl
+	   << "ActionDisplayKalman:" << incindent << iendl
 	   << "tracking color: " << m_color << iendl
 	   << "tracking client:" << incindent << iendl;
 
@@ -139,9 +139,10 @@ namespace trackingClient
   } // end of namespace gnuplot.
 
   void
-  ActionDisplayMbt::logData() const
+  ActionDisplayKalman::logData() const
   {
-    static std::ofstream file(makeLogFilename("llvc-mbt.log").c_str());
+    ODEBUG("in  ActionDisplayKalman::logData() ");
+    static std::ofstream file(makeLogFilename("llvc-mbtkalman.log").c_str());
     static unsigned index = 0;
 
     if (!file)
@@ -154,9 +155,9 @@ namespace trackingClient
 	  << " translation (4-6) | rx, ry, rz (7-9)" << std::endl;
       }
 
-    const ActionTrackingMbt::image_t& image = m_trackingClient->image();
+    const ActionTrackingKalman::image_t& image = m_trackingClient->image();
     const vpHomogeneousMatrix& cMo = m_trackingClient->pose();
-    const ActionTrackingMbt::timestamp_t& timestamp = m_trackingClient->timestamp();
+    const ActionTrackingKalman::timestamp_t& timestamp = m_trackingClient->timestamp();
 
     vpThetaUVector thetaUVector(cMo);
     vpRxyzVector rxyzVector(thetaUVector);
@@ -179,7 +180,7 @@ namespace trackingClient
     vpImage<vpRGBa> colorImage;
     vpDisplay::getImage(m_image, colorImage);
 
-    boost::format fmtColor("Ires-%04d.ppm");
+    boost::format fmtColor("Ires-mbtkalman-%04d.ppm");
     fmtColor % index;
 
     boost::format fmt("I-%04d.pgm");
