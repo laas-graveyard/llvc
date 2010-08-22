@@ -20,11 +20,11 @@ find_package (
 
 # Add required libraries
 include(LLVT-toolbox)
-ADD_LLV_PACKAGES(OpenCV)
+ADD_PACKAGES(OpenCV)
 
 # Add optional libraries
-ADD_LLV_OPTION(VISP DESCRIPTION "search for visual servoing plateform.")
-ADD_LLV_OPTION(OmniORB4 OUTPUT_VAR OMNIORB4)
+ADD_PACKAGE_OPTION(VISP DESCRIPTION "search for visual servoing plateform.")
+ADD_PACKAGE_OPTION(OmniORB4 OUTPUT_VAR OMNIORB4)
 
 # Source files exploration
 add_subdirectory (include)
