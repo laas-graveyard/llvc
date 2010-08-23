@@ -72,11 +72,14 @@ namespace trackingClient
     /// \param paramName parameter name
     /// \param paramValue parameter value
     void setTrackingParameters(std::string paramName, std::string paramValue);
-
     void getServerParameters();
     void readParameters();
     void readParameters(const std::string& filename);
-
+    
+    /// \brief return the tracked position
+    virtual const vpHomogeneousMatrix& pose()const=0;
+    virtual const image_t& image()const=0;
+    virtual const timestamp_t& timestamp()const=0;
 
     virtual bool Initialize();
 

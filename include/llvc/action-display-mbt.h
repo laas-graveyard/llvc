@@ -15,8 +15,8 @@
 # include <visp/vpMbtTracker.h>
 # include <visp/vpHomogeneousMatrix.h>
 
-# include <llvc/action-display.h>
-# include <llvc/action-tracking-mbt.h>
+# include "llvc/action-display.h"
+# include "llvc/action-tracking-mbt.h"
 
 namespace trackingClient
 {

@@ -14,7 +14,10 @@
 
 #include <visp/vpImageIo.h>
 
+/// this include is to have the function getInitFileFromModelName
 #include "llvc/action-display-mbt.h"
+#include "llvc/action-display-with-command.h"
+#include "llvc/action-tracking-with-command.h"
 #include "llvc/tools/indent.hh"
 
 // CMAKE_INSTALL_PREFIX is used to know where
@@ -30,17 +33,22 @@ namespace trackingClient
   /// \brief Logging directory.
   static const std::string loggingDir = prefix + "/var/log";
 
-  ActionDisplayMbt::ActionDisplayMbt(boost::shared_ptr<ActionGrab> gc,
-				     const std::string& modelName,
-				     const std::string& configurationName,
-				     vpColor color,
-				     bool logData)
+  ActionDisplayWithCommand::ActionDisplayWithCommand
+  (boost::shared_ptr<ActionGrab> gc,
+   const std::string& modelName,
+   const std::string& configurationName,
+   unsigned desPoseNb,
+   vpColor color,
+   bool logData)
     : ActionDisplay(gc),
-      m_trackingClient (),
+      m_trackingClient(),
       m_tracker(),
       m_initialPose(),
+      m_desPoseNb(desPoseNb),
       m_color(color),
-      m_logData(logData)
+      m_logData(logData),
+      m_modelName(modelName),
+      m_configurationName(configurationName)
   {
     m_actionGrabClient->ExecuteAction();
     m_image = m_actionGrabClient->image();
@@ -53,35 +61,130 @@ namespace trackingClient
     // so we have to set the tracker parameters
     vpCameraParameters cam = m_actionGrabClient->camera();
     m_tracker.setCameraParameters(cam);
-    m_tracker.loadModel(getModelFileFromModelName (modelName).c_str());
-    m_tracker.initClick(m_image, getInitFileFromModelName(modelName).c_str()) ;
-    m_tracker.getPose(m_initialPose);
-    m_trackingClient =
-      boost::shared_ptr<ActionTrackingMbt>
+    m_tracker.loadModel(getModelFileFromModelName(modelName).c_str());
+    
+
+    homogeneousMatrix_t desiredPoseList;
+    
+   
+    // Initilise the desired pose
+    std::cout << "You have to initialise " 
+	      << desPoseNb 
+	      << "desired positions" 
+	      << std::endl;
+    for(unsinged i=0; i<desPoseNb;++i)
+      {
+	std::cout << " Please, move the robot to the desired position number "
+		  << i
+		  << std::endl
+		  << " Click on the image when ready." 
+		  << std::endl;
+	waitForUserClick();
+        clickToInitDesiredPose(desiredPoseList);
+      }
+    // Initialise the initial pose
+    std::cout << " USER >> Please move the robot to the Initial position." 
+	      << std::endl;
+    std::cout << " Click on the image when ready." 
+	      << std::endl;
+    waitForUserClick();
+    clickToInitPose(m_initialPose);
+
+    // FIXME : specific to mbt. shoulb be changed to be more generix 
+    boost::shared_ptr<ActionTracking> tracker = 
+      boost::shared_ptr<ActionTracking>
       (new ActionTrackingMbt
        (m_initialPose,
-	gc,
-	modelName,
-	configurationName));
-    if (logData)
+    	m_actionGrabClient,
+    	m_modelName,
+    	m_configurationName));
+    
+    m_trackingClient = 
+      boost::shared_ptr<ActionTrackingWithCommand>
+      (new ActionTrackingWithCommand
+       (tracker,
+	desiredPoseList	) );
+       
+
+    
+    if (m_logData)
       m_trackingClient->setTrackingParameters("DATA", "ON");
 
+
+
+    ODEBUG("Out of the function :ActionDisplayWithCommand::ActionDisplayWithCommand ");
   }
 
-  ActionDisplayMbt::~ActionDisplayMbt()
+  ActionDisplayWithCommand::~ActionDisplayWithCommand()
   {
   }
+  
 
-  bool ActionDisplayMbt::Initialize()
+
+  /// wait for a user click
+  void  
+  ActionDisplayWithCommand::waitForUserClick()
+  {
+    bool userHasClicked = false; 
+    while (!userHasClicked)
+      {
+	m_actionGrabClient->ExecuteAction();
+	m_image = m_actionGrabClient->image();
+	vpDisplay::display(m_image);
+	vpDisplay::flush(m_image);
+	userHasClicked = vpDisplay::getClick(m_image,false);
+      }
+    std::string textYouClicked = "Click Ok ! continue ... ";
+    vpDisplay::displayCharString(m_image, 
+				 150, 150, 
+				 textYouClicked.c_str(),
+				 vpColor::red);
+    vpDisplay::flush(m_image);
+    sleep(0.5);
+    vpDisplay::display(m_image);
+    vpDisplay::flush(m_image);
+     
+     
+  }
+
+
+  bool 
+  ActionDisplayWithCommand::Initialize()
   {
     m_trackingClient->Initialize();
-
     // FIXME : always true
     return ActionDisplay::Initialize();
+  }
+    
 
+  void
+  ActionDisplayWithCommand::clickToInitDesiredPose
+  (homogeneousMatrix_t& desiredPoseList)
+  {
+    vpHomogeneousMatrix desiredPose;
+    clickToInitPose(desiredPose);
+    desiredPoseList.push_back(desiredPose);
+  
+    ODEBUG3(" Desired position saved: " << std ::endl);
+    for (unsigned i = 0 ; i < desiredPoseList.size();++i) 
+      ODEBUG3(  i  << "---\t"
+		<< desiredPoseList[i] 
+		<< std::endl);
+      
   }
 
-  bool ActionDisplayMbt::ExecuteAction()
+  bool 
+  ActionDisplayWithCommand::clickToInitPose(vpHomogeneousMatrix & cMo)
+  {
+    m_tracker.initClick(m_image, 
+			getInitFileFromModelName(m_modelName).c_str());
+    m_tracker.getPose(cMo);
+    return true;
+  }
+
+
+  bool 
+  ActionDisplayWithCommand::ExecuteAction()
   {
 
     m_trackingClient->ExecuteAction();
@@ -108,19 +211,22 @@ namespace trackingClient
     return true;
   }
 
-  void ActionDisplayMbt::CleanUp()
+  void 
+  ActionDisplayWithCommand::CleanUp()
   {
     m_trackingClient->CleanUp();
     ActionDisplay::CleanUp();
   }
 
   std::ostream&
-  ActionDisplayMbt::print (std::ostream& stream) const
+  ActionDisplayWithCommand::print (std::ostream& stream) const
   {
     ActionDisplay::print (stream);
     stream << iendl
-	   << "ActionDisplayMbt:" << incindent << iendl
+	   << "ActionDisplayWithCommand:" << incindent << iendl
+	   << "tracking nb des pose: " << m_desPoseNb << iendl
 	   << "tracking color: " << m_color << iendl
+	   << "tracking save log: " << m_logData << iendl
 	   << "tracking client:" << incindent << iendl;
 
     if (m_trackingClient)
@@ -144,7 +250,7 @@ namespace trackingClient
   } // end of namespace gnuplot.
 
   void
-  ActionDisplayMbt::logData() const
+  ActionDisplayWithCommand::logData() const
   {
     static std::ofstream file(makeLogFilename("llvc-mbt.log").c_str());
     static unsigned index = 0;

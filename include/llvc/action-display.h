@@ -8,18 +8,14 @@
 //
 // See the COPYING file for more information.
 
-#ifndef DISPLAY_TRACKING_CLIENT_H_
-# define DISPLAY_TRACKING_CLIENT_H
+#ifndef ACTION_DISPLAY_H_
+# define ACTION_DISPLAY_H_
 # include <boost/shared_ptr.hpp>
-
 # include <visp/vpDisplayX.h>
 # include <visp/vpImage.h>
-
 # include <llvs/tools/ActionWithLLVSBase.h>
-
 # include <LowLevelVisionSystem.hh>
-
-# include <llvc/action-grab.h>
+# include "llvc/action-grab.h"
 
 namespace trackingClient
 {
@@ -61,4 +57,4 @@ namespace trackingClient
 			    const ActionDisplay& actionDisplay);
 } // end of namespace trackingClient
 
-#endif  // DISPLAY_TRACKING_CLIENT_H_
+#endif  // ACTION_DISPLAY_H_

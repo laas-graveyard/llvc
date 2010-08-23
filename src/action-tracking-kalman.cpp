@@ -15,15 +15,14 @@
 namespace trackingClient
 {
   static const std::string defaultPath = "./data/model/";
-
- 
+  static const std::string trackingKalmanProcess_name = "KalmanOnNMBTProcess";
 
   ActionTrackingKalman::ActionTrackingKalman
   (const vpHomogeneousMatrix& cMo,
    boost::shared_ptr<ActionGrab> actionGrab,
    const std::string& modelName,
    const std::string& configurationName)
-    : ActionTracking("KalmanOnNMBTProcess", actionGrab),
+    : ActionTracking("trackingKalmanProcess_name", actionGrab),
       m_cMo(cMo),
       m_image(actionGrab->image().getHeight(),actionGrab->image().getWidth()),
       m_timestamp(),

@@ -12,14 +12,10 @@
 # define ACTION_TRACKING_MBT_H_
 # include <iosfwd>
 # include <string>
-
 # include <boost/shared_ptr.hpp>
-
 # include <visp/vpMbtTracker.h>
 # include <visp/vpHomogeneousMatrix.h>
-
-
-# include <llvc/action-tracking.h>
+# include "llvc/action-tracking.h"
 
 namespace trackingClient
 {

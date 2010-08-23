@@ -25,6 +25,7 @@ ADD_HEADERS(
                 llvc/action-display.h
                 llvc/action-display-mbt.h
                 llvc/action-display-kalman.h
+                llvc/action-display-with-command.h
                 llvc/tools/indent.hh
                 llvc/tools/visp-io.hh
 )

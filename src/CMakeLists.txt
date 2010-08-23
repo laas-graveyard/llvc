@@ -20,6 +20,7 @@ ADD_LLV_CLIENT(
 	action-display.cpp
 	action-display-mbt.cpp
 	action-display-kalman.cpp
+	action-display-with-command.cpp
 	tools/indent.cc
 	tools/visp-io.cc
   COMPILE_FLAGS

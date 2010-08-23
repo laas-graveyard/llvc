@@ -48,7 +48,8 @@ int main ()
       if (Verbose>2)
 	std::cout << *clientGrab << std::endl;
 
-      display.trackingClient()->setTrackingParameters("DATA", "ON");
+      // FixME redundant with true  option in contructor...  no?
+      // display.trackingClient()->setTrackingParameters("DATA", "ON");
 
 
       ODEBUG3("\n4. Initialize Display\n");

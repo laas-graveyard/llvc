@@ -15,7 +15,7 @@
 namespace trackingClient
 {
   static const std::string defaultPath = "./data/model/";
-
+  static const std::string trackingProcess_name="nmbtTrackingProcess";
   // Without the extension as ViSP wants it like that.
   std::string getInitFileFromModelName (const std::string& modelName)
   {
@@ -83,7 +83,7 @@ namespace trackingClient
    boost::shared_ptr<ActionGrab> actionGrab,
    const std::string& modelName,
    const std::string& configurationName)
-    : ActionTracking("nmbtTrackingProcess", actionGrab),
+    : ActionTracking(trackingProcess_name, actionGrab),
       m_cMo(cMo),
       m_image(actionGrab->image().getHeight(),actionGrab->image().getWidth()),
       m_timestamp(),
