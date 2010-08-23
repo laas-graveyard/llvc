@@ -9,7 +9,7 @@
 include(LLVT-toolbox)
 
 ADD_LLV_CLIENT(
-  ${PROJECT_NAME}
+  ${PROJECT_NAME}_LIBRARY_NAME
   SHARED LIBRARY
   SOURCES
 	action-grab.cpp
