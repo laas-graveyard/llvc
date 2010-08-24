@@ -22,16 +22,18 @@
 #include <visp/vpDisplayX.h>
 #include <visp/vpParseArgv.h>
 
-#define GETOPTARGS  "h:k:"
+#define GETOPTARGS  "h:k:n:"
 
 using namespace trackingClient;
 
 void usage(const char* name)
 {
   std::cout << std::endl
-	    << "\t" << name << " [-v <verbosity level>] [-h <help>]" 
-	    << std::endl
-	    << std::endl 
+	    << "\t" << name << " [-n <nb desired poses>] [-v <verbosity level>] [-h <help>]" 
+	    << "\t" <<  "nb desired poses : "
+    	    << std ::endl
+	    << "\t\t" <<  "number of poses the robot has to reach"
+    	    << std::endl 
 	    << "\t" <<  "verbosity type : "
     	    << std ::endl
 	    << "\t\t" <<  "0 : no verbosity"
@@ -40,7 +42,7 @@ void usage(const char* name)
     	    <<std::endl; 
 }
 
-bool readOption (int argc, const char ** argv, int & Verbose)
+bool readOption (int argc, const char ** argv,  unsigned &nbDesPose,int & Verbose)
 {
 
   const char *optarg ="";
@@ -51,6 +53,12 @@ bool readOption (int argc, const char ** argv, int & Verbose)
     {
       switch(c)
 	{
+	case 'n':
+	  {
+	    nbDesPose=atoi(optarg);
+	    break;
+	  }
+       
        case 'v':
 	  {
 	    Verbose = atoi(optarg);
@@ -81,18 +89,19 @@ int main (int argc, const char **argv)
 
   // set default parameters
   int Verbose = 3;
+  unsigned nbDesPose = 1;
   // read user option
-  if(!readOption (argc, argv,Verbose))
+  if(!readOption (argc, argv, nbDesPose,Verbose))
     return -1;
   ODEBUG("Verbosity mode is:" << Verbose );
- 
+  ODEBUG3("Nb desired posed is:" << nbDesPose );
   std::string configurationName = "default"; 
   vpHomogeneousMatrix cMo;
 
   try
     {
       ODEBUG3("\n1. Construct Grabber\n");
-      boost::shared_ptr<ActionGrab> clientGrab(new ActionGrab(true));
+      boost::shared_ptr<ActionGrab> clientGrab(new ActionGrab(true,true));
       ODEBUG3("Assert Grab\n");
       assert (clientGrab);
       ODEBUG3("Grab ok\n");
@@ -114,7 +123,7 @@ int main (int argc, const char **argv)
 	 clientGrab, 
 	 "ElectricWallFar", 
 	 configurationName,
-	 2,
+	 nbDesPose,
 	 vpColor::blue, 
 	 true);
       
@@ -123,18 +132,25 @@ int main (int argc, const char **argv)
 		  << std::endl
 		  << std::endl
 		  <<  display << iendl;
-           
-     
-      // ODEBUG3("\n4. Initialize Display\n");
-      //display.Initialize();
+         
+      unsigned iter=0;  
+      
+      //Test go to next and display
+      while(display.trackingClient()->nextDesiredPose())
+      	{
+        iter++;
+        std::cout  <<"--------" << iter 
+      	     << iendl
+      	     << display 
+      	     << iendl;
+         }
+ 
+      ODEBUG3("\n4. Initialize Display\n");
+      display.Initialize();
 
 
-      //ODEBUG3("\n5.5 Initialize Display\n");
-      // Switch to FLOW
-      //clientGrab->setTriggerMode(false);
-
-      //ODEBUG3("\n6. Execute Display\n");
-      //display.ExecuteAction();
+      ODEBUG3("\n6. Execute Display\n");
+      display.ExecuteAction();
 
      
       //ODEBUG3("\n7. LOOP\n");
@@ -149,8 +165,8 @@ int main (int argc, const char **argv)
       //    std::cout << *clientGrab << iendl
       //	      << display << iendl;
       //}
-      //display.CleanUp();
-      //clientGrab->CleanUp();
+      display.CleanUp();
+      clientGrab->CleanUp();
 
     }
   catch(char *myexception)

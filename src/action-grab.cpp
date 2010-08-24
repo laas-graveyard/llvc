@@ -127,6 +127,7 @@ namespace trackingClient
   void ActionGrab::setTriggerMode(bool atriggerMode)
   {
     m_triggerMode = atriggerMode;
+    ODEBUG3("m_triggermode 1:" << m_triggerMode );
     if (m_triggerMode)
       m_LLVS->SetSynchronizationMode(LowLevelVisionSystem::SYNCHRO_TRIGGER);
     else
@@ -153,12 +154,14 @@ namespace trackingClient
   bool
   ActionGrab::ExecuteAction()
   {
+    std::cout << "m_triggermode 1:" << m_triggerMode << std::endl;
     ImageData_var corbaImage;
     if (m_triggerMode)
       m_LLVS->TriggerSynchro();
 
     CORBA::Long cameraId(m_cameraID);
     CORBA::String_var format = CORBA::string_dup(m_format.c_str());
+    std::cout << "m_triggermode 2:" << m_triggerMode << std::endl;
     if (m_triggerMode)
       sleep(1);
     m_LLVS->getRectifiedImage(cameraId, corbaImage);

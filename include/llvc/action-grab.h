@@ -54,8 +54,8 @@ namespace trackingClient
       /// Alias to ViSP image type.
       typedef vpImage<unsigned char> image_t;
 
-      explicit ActionGrab(bool rectification = true,
-			  bool triggerMode = false);
+      explicit ActionGrab(bool rectification,
+			  bool triggerMode  );
       virtual ~ActionGrab();
       virtual std::ostream& print (std::ostream& stream) const;
 

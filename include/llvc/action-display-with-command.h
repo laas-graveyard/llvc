@@ -65,15 +65,21 @@ namespace trackingClient
     void clickToInitDesiredPose(std::vector<vpHomogeneousMatrix>& desiredPoseList);
     /// \brief Write current debug information on disk.
     void logData() const;
+    /// \brief read the config parameters
+    void readParameters(); 
   
   private:
    
-    /// Tracking client.
+    /// Command client.
     boost::shared_ptr<ActionTrackingWithCommand> m_trackingClient;
+    /// Tracking client.
+    boost::shared_ptr<ActionTracking> m_actionTracking;
     /// Local tracker for initialization and display \bf only.
     vpMbtTracker m_tracker;
     /// Initial pose determined from user clicks.
     vpHomogeneousMatrix m_initialPose;
+    // list of desired pose
+    homogeneousMatrix_t  m_desiredPoseList;
     /// Nb of desired Pose to reach, default is 1
     unsigned m_desPoseNb; 
     /// Color used for model project on the image, default is blue

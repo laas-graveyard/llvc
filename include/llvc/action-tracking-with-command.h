@@ -51,8 +51,21 @@ namespace trackingClient
     virtual void CleanUp();
  
     void addDesiredPose(vpHomogeneousMatrix & cdMo);
+   
+    /// \brief Go to the next desired position
+    /// return true when the next position is in the table
+    /// return false if the position is not in the table
+    bool nextDesiredPose();
     void clearDesiredPose();
+    /// \brief read the config parameters
+    void readParameters(); 
     
+    /// \brief Model name in the database.
+    const std::string& modelName() const
+    {
+      return  m_trackerClient->modelName();
+    }
+
     const timestamp_t& timestamp()const
     {
       return m_trackerClient->timestamp();
@@ -79,17 +92,17 @@ namespace trackingClient
     /// \brief Return true if the desired cMo has been reached.
     bool movementFinished() const;
 
-  private:
     const vpHomogeneousMatrix& desiredPose() const;
 
   private:
-    /// \brief Shared pointer on the tracking client.
+    
+     /// \brief Shared pointer on the tracking client.
     boost::shared_ptr<ActionTracking> m_trackerClient;
-    // desired position
+    /// \brief desired position
     homogeneousMatrix_t& m_cdMoTab ;
-    // threshold to stop the control
+    /// \brief threshold to stop the control
     double m_threshold;
-    // current index
+    /// \brief current index
     unsigned m_index;
      
     

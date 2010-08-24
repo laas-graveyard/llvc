@@ -73,14 +73,15 @@ namespace trackingClient
     /// \param paramValue parameter value
     void setTrackingParameters(std::string paramName, std::string paramValue);
     void getServerParameters();
-    void readParameters();
+    virtual void readParameters()=0;
     void readParameters(const std::string& filename);
     
     /// \brief return the tracked position
     virtual const vpHomogeneousMatrix& pose()const=0;
     virtual const image_t& image()const=0;
     virtual const timestamp_t& timestamp()const=0;
-
+    virtual const std::string& modelName()const=0;
+    
     virtual bool Initialize();
 
     boost::shared_ptr<ActionGrab> grabClient()

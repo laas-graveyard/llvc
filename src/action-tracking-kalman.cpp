@@ -22,7 +22,7 @@ namespace trackingClient
    boost::shared_ptr<ActionGrab> actionGrab,
    const std::string& modelName,
    const std::string& configurationName)
-    : ActionTracking("trackingKalmanProcess_name", actionGrab),
+    : ActionTracking(trackingKalmanProcess_name.c_str(), actionGrab),
       m_cMo(cMo),
       m_image(actionGrab->image().getHeight(),actionGrab->image().getWidth()),
       m_timestamp(),

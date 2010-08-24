@@ -39,9 +39,6 @@ namespace trackingClient
     return res;
   }
 
-
-
-
   void convertViSPHomogeneousMatrixToCorba
   (const vpHomogeneousMatrix& visp,
    ModelTrackerInterface::HomogeneousMatrix_var& corba)
@@ -92,11 +89,9 @@ namespace trackingClient
   {
     ModelTrackerInterface::HomogeneousMatrix_var cMoCorba;
     convertViSPHomogeneousMatrixToCorba(cMo, cMoCorba);
-
     ModelTrackerInterface_var serverTracker;
     serverTracker = m_LLVS->getModelTracker();
     serverTracker->SetcMo(cMoCorba);
-
     setTrackingParameters
       ("PATH_MODEL", getModelFileFromModelName (m_modelName));
     readParameters();
@@ -124,18 +119,16 @@ namespace trackingClient
   }
 
   bool ActionTrackingMbt::Initialize()
-  {
-
+  { 
+    readParameters();
     return ActionTracking::Initialize();
   }
 
   bool ActionTrackingMbt::ExecuteAction()
   {
-    int Verbose = 0;
     m_LLVS->TriggerSynchro();
-
     retrieveBufferData();
-
+    int Verbose = 3;
     if (Verbose > 2)
       {
 	std::cout << "cMo retrieved from server by retrieveBuferData:"
@@ -160,15 +153,13 @@ namespace trackingClient
   {
     ModelTrackerInterface_var MTI = m_LLVS->getModelTracker();
     ModelTrackerInterface::DebugInfoObject_var debugObject;
-
     MTI->GetDebugInfoObject(debugObject);
-
     convertCorbaImageToVispImage
       (debugObject->anImgData, m_image);
 
     convertCorbaHomogeneousMatrixToVisp
       (debugObject->aData, m_cMo);
-
+ 
     m_timestamp.first = debugObject->anImgData.longData[0];
     m_timestamp.second = debugObject->anImgData.longData[1];
   }

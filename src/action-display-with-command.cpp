@@ -42,8 +42,10 @@ namespace trackingClient
    bool logData)
     : ActionDisplay(gc),
       m_trackingClient(),
+      m_actionTracking(),
       m_tracker(),
       m_initialPose(),
+      m_desiredPoseList(),
       m_desPoseNb(desPoseNb),
       m_color(color),
       m_logData(logData),
@@ -63,27 +65,29 @@ namespace trackingClient
     m_tracker.setCameraParameters(cam);
     m_tracker.loadModel(getModelFileFromModelName(modelName).c_str());
     
-
-    homogeneousMatrix_t desiredPoseList;
-    
-   
     // Initilise the desired pose
-    std::cout << "You have to initialise " 
+    std::cout << " You have to initialise " 
 	      << desPoseNb 
-	      << "desired positions" 
-	      << std::endl;
-    for(unsinged i=0; i<desPoseNb;++i)
+	      << " desired position(s)" 
+	      << std::endl<< std::endl;
+
+    for(unsigned i=0; i<desPoseNb;++i)
       {
-	std::cout << " Please, move the robot to the desired position number "
-		  << i
+	std::cout << std::endl
+		  << " Please, move the robot to the desired position number "
+		  << i+1
 		  << std::endl
 		  << " Click on the image when ready." 
 		  << std::endl;
 	waitForUserClick();
-        clickToInitDesiredPose(desiredPoseList);
+        clickToInitDesiredPose(m_desiredPoseList);
       }
+    
+
+
     // Initialise the initial pose
-    std::cout << " USER >> Please move the robot to the Initial position." 
+    std::cout << std::endl
+	      <<" Please move the robot to the Initial position." 
 	      << std::endl;
     std::cout << " Click on the image when ready." 
 	      << std::endl;
@@ -91,28 +95,29 @@ namespace trackingClient
     clickToInitPose(m_initialPose);
 
     // FIXME : specific to mbt. shoulb be changed to be more generix 
-    boost::shared_ptr<ActionTracking> tracker = 
-      boost::shared_ptr<ActionTracking>
+    m_actionTracking = boost::shared_ptr<ActionTracking>
       (new ActionTrackingMbt
        (m_initialPose,
     	m_actionGrabClient,
     	m_modelName,
     	m_configurationName));
     
+   
     m_trackingClient = 
       boost::shared_ptr<ActionTrackingWithCommand>
       (new ActionTrackingWithCommand
-       (tracker,
-	desiredPoseList	) );
+       (m_actionTracking,
+	m_desiredPoseList) );
        
-
-    
+  
+ 
+    // read parameters in config files
+    readParameters();
     if (m_logData)
       m_trackingClient->setTrackingParameters("DATA", "ON");
 
-
-
-    ODEBUG("Out of the function :ActionDisplayWithCommand::ActionDisplayWithCommand ");
+    
+    
   }
 
   ActionDisplayWithCommand::~ActionDisplayWithCommand()
@@ -136,21 +141,28 @@ namespace trackingClient
       }
     std::string textYouClicked = "Click Ok ! continue ... ";
     vpDisplay::displayCharString(m_image, 
-				 150, 150, 
+				 100, 100, 
 				 textYouClicked.c_str(),
 				 vpColor::red);
     vpDisplay::flush(m_image);
-    sleep(0.5);
+    sleep(1);
     vpDisplay::display(m_image);
     vpDisplay::flush(m_image);
      
      
   }
-
+ 
+  void 
+   ActionDisplayWithCommand::readParameters()
+  {
+    
+    m_trackingClient->readParameters();
+  }
 
   bool 
   ActionDisplayWithCommand::Initialize()
   {
+    readParameters();
     m_trackingClient->Initialize();
     // FIXME : always true
     return ActionDisplay::Initialize();
@@ -165,9 +177,9 @@ namespace trackingClient
     clickToInitPose(desiredPose);
     desiredPoseList.push_back(desiredPose);
   
-    ODEBUG3(" Desired position saved: " << std ::endl);
+    ODEBUG(" Desired position saved:\n " << std ::endl);
     for (unsigned i = 0 ; i < desiredPoseList.size();++i) 
-      ODEBUG3(  i  << "---\t"
+      ODEBUG(  i  << "---\t"
 		<< desiredPoseList[i] 
 		<< std::endl);
       
@@ -178,7 +190,12 @@ namespace trackingClient
   {
     m_tracker.initClick(m_image, 
 			getInitFileFromModelName(m_modelName).c_str());
-    m_tracker.getPose(cMo);
+    m_tracker.track(m_image);
+    m_tracker.getPose(cMo); 
+    vpCameraParameters cam = m_actionGrabClient->camera();
+    m_tracker.display(m_image,cMo,cam,vpColor::blue);
+    vpDisplay::flush(m_image);
+    sleep(1);
     return true;
   }
 
@@ -186,6 +203,8 @@ namespace trackingClient
   bool 
   ActionDisplayWithCommand::ExecuteAction()
   {
+
+    ODEBUG3("Execute Action");
 
     m_trackingClient->ExecuteAction();
     m_image = m_trackingClient->image();

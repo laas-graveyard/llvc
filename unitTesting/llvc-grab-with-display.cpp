@@ -18,7 +18,7 @@ using namespace trackingClient;
 
 int main ()
 {
-  boost::shared_ptr<ActionGrab> client(new ActionGrab);
+  boost::shared_ptr<ActionGrab> client(new ActionGrab(true,false));
   ActionDisplay displayClient(client);
   client->Initialize();
   displayClient.Initialize();

@@ -17,12 +17,26 @@
 
 namespace trackingClient
 {
+
+  // FIXME : this code is duplicated in many classes
+  
+  /// \brief default data path
+  static const std::string defaultPath = "./data/model/";
   /// \brief Installation prefix.
   static const std::string prefix = CMAKE_INSTALL_PREFIX;
   /// \brief Logging directory.
   static const std::string loggingDir = prefix + "/var/log";
-  
+  /// \brief Process name
   static const std::string computeLawProcess_name = "ComputeControlLawProcess";
+
+  
+  
+  std::string getCommandFileFromModelName (const std::string& modelName)
+  {
+    std::string res(defaultPath);
+    res += modelName + "/" + modelName + "-command.conf";
+    return res;
+  }
 
   ActionTrackingWithCommand::ActionTrackingWithCommand
   (boost::shared_ptr<ActionTracking> trackerClient,
@@ -36,6 +50,16 @@ namespace trackingClient
       m_index(currentIndex)
      
   {
+    ODEBUG3(" m_trackerClient pose\n"<< m_trackerClient->pose());
+    ModelTrackerInterface_var serverTracker;
+    serverTracker = m_LLVS->getModelTracker();
+    
+    ModelTrackerInterface::HomogeneousMatrix corbacMo,corbacdMo;
+    convertViSPHomogeneousMatrixToCorba(pose(),corbacMo);
+    convertViSPHomogeneousMatrixToCorba(desiredPose(),corbacdMo);
+    serverTracker->SetcMo(corbacMo);
+    serverTracker->SetcdMo(corbacdMo);
+
   }
 
   ActionTrackingWithCommand::~ActionTrackingWithCommand()
@@ -45,21 +69,40 @@ namespace trackingClient
   std::ostream&
   ActionTrackingWithCommand::print (std::ostream& stream) const
   {
-    stream << "ActionTrackingWithCommand:"<<iendl;
-    stream << iendl
-	   << "cMo: " << incindent << iendl;
+    stream << "ActionTrackingWithCommand:"
+	   << iendl
+	   << "Nb desired pose: " << m_cdMoTab.size() 
+	   << iendl
+	   << "Current pose: " << m_index 
+	   << iendl
+	   << "cMo: "  <<  iendl;
     display (stream, pose());
-    stream << "cdMo: " << incindent << iendl;
+    stream << "cdMo current: " <<  iendl;
     display (stream, desiredPose());
-    stream << "velocity :" <<incindent << iendl;
-    stream << decindent << decindent;
+    stream << "cdMo list: " <<   incindent << iendl;
+    for(unsigned i=0; i < m_cdMoTab.size() ; ++i )
+      {
+	if(i==m_index)
+	  stream << "* " ;
+	stream << "   pose " << i 
+	       << iendl;
+	display(stream, m_cdMoTab[i]);
+	
+      }
+    stream << decindent;
+    stream << "velocity :" << incindent <<iendl;
+    stream << incindent;
+    if (m_trackerClient)
+      stream << *m_trackerClient;
+    else
+      stream << "no tracking client";
     return stream;
   }
   
   const vpHomogeneousMatrix&   
   ActionTrackingWithCommand::desiredPose() const
   {
-    if (m_index<0 | m_index > m_cdMoTab.size())
+    if (m_index<0 | m_index >= m_cdMoTab.size())
       throw "Invalid current index in ActionTrackingWithCommand";
     return m_cdMoTab[m_index]; 
   }
@@ -80,27 +123,48 @@ namespace trackingClient
     m_cdMoTab.clear();
   }
 
+  bool
+  ActionTrackingWithCommand::nextDesiredPose()
+  {
+    m_index++;
+    if (m_index >= m_cdMoTab.size())
+      {
+	m_index--;
+	return false;
+      }
+    else
+      return true;
+       
+  }
 
+  
   bool
   ActionTrackingWithCommand::Initialize()
   {
-    ActionTracking::Initialize();
-    m_trackerClient->Initialize();
-    m_LLVS->StartProcess("ComputeControlLawProcess");
-    ODEBUG3("ComputeControlLawProcess started");
-    return true;
+    ODEBUG3("init");
+    //m_LLVS->StartProcess(computeLawProcess_name.c_str());
+    //ODEBUG3(computeLawProcess_name<<" started");
+    // FIXME : always true
+    return   m_trackerClient->Initialize();
   }
 
   bool
   ActionTrackingWithCommand::ExecuteAction()
   {
-    //if the control law converges stop process
-    if(movementFinished())
-      {
-	m_LLVS->StopProcess("ComputeControlLawProcess");
-	return false;
-      }
+    //if the control law converges nextPose
+    //if(movementFinished())
+    //{
+    //if(!nextDesiredPose())
+    //  {
+    //    m_LLVS->StopProcess(computeLawProcess_name.c_str());
+    //    return false;
+    //  }
+    //}
+
+    ODEBUG3("Execute Action");
     m_trackerClient->ExecuteAction();
+   
+
     return true;
   }
 
@@ -108,7 +172,7 @@ namespace trackingClient
   ActionTrackingWithCommand::CleanUp()
   {
     //ActionTracking::CleanUp();
-    m_LLVS->StopProcess("ComputeControlLawProcess");
+    m_LLVS->StopProcess(computeLawProcess_name.c_str());
     m_trackerClient->CleanUp();
     clearDesiredPose();
   }
@@ -127,5 +191,14 @@ namespace trackingClient
     errorTest[2] = error[4];
 
     return errorTest.infinityNorm() < m_threshold;
+  }
+
+
+  void 
+  ActionTrackingWithCommand::readParameters()
+  {
+    ActionTracking::readParameters
+      (getCommandFileFromModelName(modelName()));
+    m_trackerClient->readParameters();
   }
 } // end of namespace trackingClient.

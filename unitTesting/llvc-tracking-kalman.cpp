@@ -115,7 +115,7 @@ int main (int argc, const char **argv)
     {
       ODEBUG3("\n1. Construct Grabber\n");
       // Start with TRIGGER_MODE
-      boost::shared_ptr<ActionGrab> clientGrab(new ActionGrab(true));
+      boost::shared_ptr<ActionGrab> clientGrab(new ActionGrab(true,true));
       assert (clientGrab);
 
       ODEBUG3("\n2. Initialize Grabber\n");
@@ -127,7 +127,7 @@ int main (int argc, const char **argv)
       clientGrab->ExecuteAction();
 
       ODEBUG3("\n4. Construct Display\n");
-      ActionDisplayKalman display(clientGrab, "jrlLabGround", configurationName,
+      ActionDisplayKalman display(clientGrab, "ElectricWallFar", configurationName,
 			       vpColor::blue, true);
       if (Verbose>2)
 	std::cout << *clientGrab << std::endl

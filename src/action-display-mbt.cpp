@@ -36,7 +36,7 @@ namespace trackingClient
 				     vpColor color,
 				     bool logData)
     : ActionDisplay(gc),
-      m_trackingClient (),
+      m_trackingClient(),
       m_tracker(),
       m_initialPose(),
       m_color(color),
@@ -55,7 +55,11 @@ namespace trackingClient
     m_tracker.setCameraParameters(cam);
     m_tracker.loadModel(getModelFileFromModelName (modelName).c_str());
     m_tracker.initClick(m_image, getInitFileFromModelName(modelName).c_str()) ;
+    m_tracker.track(m_image);
     m_tracker.getPose(m_initialPose);
+
+    ODEBUG3("ActionDisplay: cMo init" << m_initialPose);
+
     m_trackingClient =
       boost::shared_ptr<ActionTrackingMbt>
       (new ActionTrackingMbt
@@ -75,7 +79,6 @@ namespace trackingClient
   bool ActionDisplayMbt::Initialize()
   {
     m_trackingClient->Initialize();
-
     // FIXME : always true
     return ActionDisplay::Initialize();
 

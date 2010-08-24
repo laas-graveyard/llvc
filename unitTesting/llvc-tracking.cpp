@@ -30,7 +30,7 @@ int main ()
     {
       ODEBUG3("\n1. Construct Grabber\n");
       // Start with TRIGGER_MODE
-      boost::shared_ptr<ActionGrab> clientGrab(new ActionGrab(true));
+      boost::shared_ptr<ActionGrab> clientGrab(new ActionGrab(true,true));
       assert (clientGrab);
 
       ODEBUG3("\n2. Initialize Grabber\n");
@@ -42,9 +42,9 @@ int main ()
       clientGrab->ExecuteAction();
 
       ODEBUG3("\n4. Construct Display\n");
-      //ActionDisplayMbt display(clientGrab, "ElectricWallFar", "default");
-      ActionDisplayMbt display(clientGrab, "jrlLabGround", "default",
-			       vpColor::blue, true);
+      ActionDisplayMbt display(clientGrab, "ElectricWallFar", "default");
+      //ActionDisplayMbt display(clientGrab, "jrlLabGround", "default",
+      //		       vpColor::blue, true);
       if (Verbose>2)
 	std::cout << *clientGrab << std::endl;
 
