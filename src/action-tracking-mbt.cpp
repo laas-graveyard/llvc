@@ -121,7 +121,7 @@ namespace trackingClient
 
   bool ActionTrackingMbt::Initialize()
   { 
-    readParameters();
+    //readParameters();
     return ActionTracking::Initialize();
   }
 

@@ -136,14 +136,14 @@ int main (int argc, const char **argv)
       unsigned iter=0;  
       
       //Test go to next and display
-      while(display.trackingClient()->nextDesiredPose())
-      	{
-        iter++;
-        std::cout  <<"--------" << iter 
-      	     << iendl
-      	     << display 
-      	     << iendl;
-         }
+      //while(display.trackingClient()->nextDesiredPose())
+      //	{
+      // iter++;
+      // std::cout  <<"--------" << iter 
+      //	     << iendl
+      //	     << display 
+      //	     << iendl;
+      //  }
  
       ODEBUG3("\n4. Initialize Display\n");
       display.Initialize();
@@ -153,18 +153,19 @@ int main (int argc, const char **argv)
       display.ExecuteAction();
 
      
-      //ODEBUG3("\n7. LOOP\n");
-      // unsigned int nbIter = 3000000;
-      //for (unsigned i = 0; i < nbIter; ++i)
-      //{
-      //  if (Verbose>2)
-      //    std::cout << "Frame " << i << iendl;
-      //  clientGrab->ExecuteAction();
-      //  display.ExecuteAction();
-      //  if (Verbose>2)
-      //    std::cout << *clientGrab << iendl
-      //	      << display << iendl;
-      //}
+      ODEBUG3("\n7. LOOP\n");
+      while (!(display.trackingClient()->movementFinished()))
+      {
+        iter++;
+        if (Verbose>2)
+          std::cout << "Frame " << iter << iendl;
+        clientGrab->ExecuteAction();
+        display.ExecuteAction();
+        
+      }
+      
+      std::cout << "    -------- Finish ! -------- " << std::endl;
+
       display.CleanUp();
       clientGrab->CleanUp();
 

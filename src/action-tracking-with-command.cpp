@@ -79,7 +79,7 @@ namespace trackingClient
     display (stream, pose());
     stream << "cdMo current: " <<  iendl;
     display (stream, desiredPose());
-    stream << "cdMo list: " <<   incindent << iendl;
+    stream << "cdMo list: " <<   iendl;
     for(unsigned i=0; i < m_cdMoTab.size() ; ++i )
       {
 	if(i==m_index)
@@ -89,9 +89,7 @@ namespace trackingClient
 	display(stream, m_cdMoTab[i]);
 	
       }
-    stream << decindent;
-    stream << "velocity :" << incindent <<iendl;
-    stream << incindent;
+    stream << "velocity :" << iendl;
     if (m_trackerClient)
       stream << *m_trackerClient;
     else
@@ -142,8 +140,8 @@ namespace trackingClient
   ActionTrackingWithCommand::Initialize()
   {
     ODEBUG3("init");
-    //m_LLVS->StartProcess(computeLawProcess_name.c_str());
-    //ODEBUG3(computeLawProcess_name<<" started");
+    m_LLVS->StartProcess(computeLawProcess_name.c_str());
+    ODEBUG3(computeLawProcess_name<<" started");
     // FIXME : always true
     return   m_trackerClient->Initialize();
   }
@@ -152,16 +150,17 @@ namespace trackingClient
   ActionTrackingWithCommand::ExecuteAction()
   {
     //if the control law converges nextPose
-    //if(movementFinished())
-    //{
-    //if(!nextDesiredPose())
-    //  {
-    //    m_LLVS->StopProcess(computeLawProcess_name.c_str());
-    //    return false;
-    //  }
-    //}
+    if(movementFinished())
+    {
+    if(!nextDesiredPose())
+      {
+        m_LLVS->StopProcess(computeLawProcess_name.c_str());
+        return false;
+      }
 
-    ODEBUG3("Execute Action");
+    }
+
+    ODEBUG("Execute Action");
     m_trackerClient->ExecuteAction();
    
 
@@ -171,7 +170,7 @@ namespace trackingClient
   void
   ActionTrackingWithCommand::CleanUp()
   {
-    //ActionTracking::CleanUp();
+    
     m_LLVS->StopProcess(computeLawProcess_name.c_str());
     m_trackerClient->CleanUp();
     clearDesiredPose();
@@ -189,7 +188,7 @@ namespace trackingClient
     errorTest[0] = error[0];
     errorTest[1] = error[2];
     errorTest[2] = error[4];
-
+    ODEBUG3(errorTest.infinityNorm());
     return errorTest.infinityNorm() < m_threshold;
   }
 

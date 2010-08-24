@@ -37,10 +37,11 @@ namespace trackingClient
  
     /// \brief Construct the class using its server process name.
     ///
-    ActionTrackingWithCommand
+    /// FIXME : synchornise threshold with server
+     ActionTrackingWithCommand
       (boost::shared_ptr<ActionTracking> trackerClient,
        homogeneousMatrix_t& desiredPoseList,
-       double threshold = 1e-2,
+       double threshold = 1e-1,
        unsigned currentIndex = 0 );
     virtual ~ActionTrackingWithCommand();
 

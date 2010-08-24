@@ -92,8 +92,14 @@ namespace trackingClient
     std::cout << " Click on the image when ready." 
 	      << std::endl;
     waitForUserClick();
-    clickToInitPose(m_initialPose);
-
+    try
+      {
+	clickToInitPose(m_initialPose);
+      }
+    catch(...)
+      {
+	std::cout << "problem in init pose" << std::endl;
+      }
     // FIXME : specific to mbt. shoulb be changed to be more generix 
     m_actionTracking = boost::shared_ptr<ActionTracking>
       (new ActionTrackingMbt
@@ -188,9 +194,17 @@ namespace trackingClient
   bool 
   ActionDisplayWithCommand::clickToInitPose(vpHomogeneousMatrix & cMo)
   {
+    try{
     m_tracker.initClick(m_image, 
 			getInitFileFromModelName(m_modelName).c_str());
+    
     m_tracker.track(m_image);
+    }
+    catch(...)
+    {
+      std::cout << "clickToInitPose Error"<<std::endl;  
+      return false;
+    }
     m_tracker.getPose(cMo); 
     vpCameraParameters cam = m_actionGrabClient->camera();
     m_tracker.display(m_image,cMo,cam,vpColor::blue);
@@ -204,7 +218,7 @@ namespace trackingClient
   ActionDisplayWithCommand::ExecuteAction()
   {
 
-    ODEBUG3("Execute Action");
+    ODEBUG("Execute Action");
 
     m_trackingClient->ExecuteAction();
     m_image = m_trackingClient->image();
