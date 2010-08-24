@@ -14,6 +14,7 @@
 
 namespace trackingClient
 {
+  static const int Verbose = 0;
   static const std::string defaultPath = "./data/model/";
   static const std::string trackingProcess_name="nmbtTrackingProcess";
   // Without the extension as ViSP wants it like that.
@@ -128,7 +129,7 @@ namespace trackingClient
   {
     m_LLVS->TriggerSynchro();
     retrieveBufferData();
-    int Verbose = 3;
+   
     if (Verbose > 2)
       {
 	std::cout << "cMo retrieved from server by retrieveBuferData:"
