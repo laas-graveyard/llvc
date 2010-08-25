@@ -131,8 +131,15 @@ namespace trackingClient
 	return false;
       }
     else
-      return true;
-       
+      { 
+	
+	ModelTrackerInterface_var serverTracker;
+	serverTracker = m_LLVS->getModelTracker();
+	ModelTrackerInterface::HomogeneousMatrix corbacdMo;
+	convertViSPHomogeneousMatrixToCorba(desiredPose(),corbacdMo);
+	serverTracker->SetcdMo(corbacdMo);
+	return true;
+      }
   }
 
   
@@ -140,25 +147,25 @@ namespace trackingClient
   ActionTrackingWithCommand::Initialize()
   {
     ODEBUG3("init");
-    m_LLVS->StartProcess(computeLawProcess_name.c_str());
+    m_trackerClient->Initialize();
     ODEBUG3(computeLawProcess_name<<" started");
     // FIXME : always true
-    return   m_trackerClient->Initialize();
+    return   m_LLVS->StartProcess(computeLawProcess_name.c_str());
   }
 
   bool
   ActionTrackingWithCommand::ExecuteAction()
   {
     //if the control law converges nextPose
-    if(movementFinished())
-    {
-    if(!nextDesiredPose())
-      {
-        m_LLVS->StopProcess(computeLawProcess_name.c_str());
-        return false;
-      }
-
-    }
+    //if(movementFinished())
+    //  {
+    //if(!nextDesiredPose())
+    //  {
+    //    m_LLVS->StopProcess(computeLawProcess_name.c_str());
+    //    return false;
+    //  }
+	
+    //}
 
     ODEBUG("Execute Action");
     m_trackerClient->ExecuteAction();

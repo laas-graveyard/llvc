@@ -39,7 +39,8 @@ namespace trackingClient
    const std::string& configurationName,
    unsigned desPoseNb,
    vpColor color,
-   bool logData)
+   bool logData,
+   std::string fileNameOfPoses)
     : ActionDisplay(gc),
       m_trackingClient(),
       m_actionTracking(),
@@ -50,7 +51,8 @@ namespace trackingClient
       m_color(color),
       m_logData(logData),
       m_modelName(modelName),
-      m_configurationName(configurationName)
+      m_configurationName(configurationName),
+      m_fileNameOfPoses(fileNameOfPoses)
   {
     m_actionGrabClient->ExecuteAction();
     m_image = m_actionGrabClient->image();
@@ -65,24 +67,11 @@ namespace trackingClient
     m_tracker.setCameraParameters(cam);
     m_tracker.loadModel(getModelFileFromModelName(modelName).c_str());
     
-    // Initilise the desired pose
-    std::cout << " You have to initialise " 
-	      << desPoseNb 
-	      << " desired position(s)" 
-	      << std::endl<< std::endl;
-
-    for(unsigned i=0; i<desPoseNb;++i)
-      {
-	std::cout << std::endl
-		  << " Please, move the robot to the desired position number "
-		  << i+1
-		  << std::endl
-		  << " Click on the image when ready." 
-		  << std::endl;
-	waitForUserClick();
-        clickToInitDesiredPose(m_desiredPoseList);
-      }
-    
+    // Initialize the desired poses to be tracked.
+    // Test if a filename is available.
+    if (!readFileOfPoses())
+      // if not start the user interface.
+      userInterfaceInitPoses();
 
 
     // Initialise the initial pose
@@ -100,6 +89,8 @@ namespace trackingClient
       {
 	std::cout << "problem in init pose" << std::endl;
       }
+
+    ODEBUG3("Build The Tracker");
     // FIXME : specific to mbt. shoulb be changed to be more generix 
     m_actionTracking = boost::shared_ptr<ActionTracking>
       (new ActionTrackingMbt
@@ -134,17 +125,26 @@ namespace trackingClient
 
   /// wait for a user click
   void  
-  ActionDisplayWithCommand::waitForUserClick()
+  ActionDisplayWithCommand::waitForUserClick(std::string text )
   {
+
+    std::cout << text << std::endl;
     bool userHasClicked = false; 
     while (!userHasClicked)
       {
 	m_actionGrabClient->ExecuteAction();
 	m_image = m_actionGrabClient->image();
 	vpDisplay::display(m_image);
+	vpDisplay::displayCharString(m_image, 
+				 100, 100, 
+				 text.c_str(),
+				 vpColor::blue);
+  
 	vpDisplay::flush(m_image);
 	userHasClicked = vpDisplay::getClick(m_image,false);
       }
+
+    vpDisplay::display(m_image);
     std::string textYouClicked = "Click Ok ! continue ... ";
     vpDisplay::displayCharString(m_image, 
 				 100, 100, 
@@ -157,9 +157,98 @@ namespace trackingClient
      
      
   }
- 
-  void 
-   ActionDisplayWithCommand::readParameters()
+
+  bool ActionDisplayWithCommand::readFileOfPoses()
+  {
+    bool accessFileOfPoses=true;
+    
+    /* Start predicates */
+    if (m_fileNameOfPoses.size()==0)
+      {
+	
+	return false;
+      }
+    
+    /* Opening file */
+    std::ifstream aif;
+    aif.open((char *)m_fileNameOfPoses.c_str(),
+	     std::ifstream::in);
+
+    if (!aif.is_open())
+      {
+	ODEBUG3("Unable to open " << m_fileNameOfPoses);
+	return false;
+      }
+    // End predicates.
+
+
+    aif >> m_desPoseNb;
+    vpPoseVector lPoseVector;
+    m_desiredPoseList.resize(m_desPoseNb);
+    for(unsigned int lIndex=0;
+	lIndex<m_desPoseNb;
+	lIndex++)
+      {
+	for(unsigned int lpvi=0;
+	    lpvi < 6; lpvi++)
+	  aif >> lPoseVector[lpvi];
+	
+	m_desiredPoseList[lIndex].buildFrom(lPoseVector);
+      }
+
+    aif.close();
+    return accessFileOfPoses;
+
+  }
+
+  void ActionDisplayWithCommand::userInterfaceInitPoses()
+  {
+    // Initilise the desired pose
+    std::cout << " You have to initialise " 
+	      << m_desPoseNb 
+	      << " desired position(s)" 
+	      << std::endl<< std::endl;
+    
+    for(unsigned int i=0; i<m_desPoseNb;++i)
+      {
+	std::cout << std::endl
+		  << " Please, move the robot to the desired position number "
+		  << i+1
+		  << std::endl
+		  << " Click on the image when ready." 
+		  << std::endl;
+	waitForUserClick();
+        clickToInitDesiredPose(m_desiredPoseList);
+      }
+    
+    std::cout << std::endl
+	      << " Would you like to save the points ? (y/n) "
+	      << std::endl;
+    char lanswer;
+    std::cin >> lanswer;
+    if ((lanswer=='y') || (lanswer=='Y'))
+
+    std::cout << std::endl
+	      << " Please enter the filename where to save the data. "
+	      << std::endl;
+    std::string lFileOfPoses;
+    std::cin >> lFileOfPoses;
+
+    std::ofstream aof;
+    aof.open((char *)lFileOfPoses.c_str(),std::ifstream::out);
+    aof <<  m_desPoseNb << std::endl;
+    for(unsigned int i=0;i<m_desiredPoseList.size();i++)
+      {
+	vpPoseVector avp;
+	avp.buildFrom(m_desiredPoseList[i]);
+	for(unsigned int j=0;j<6;j++)
+	  aof << avp[j] << " ";
+	aof << std::endl;
+      }
+    aof.close();
+  }
+
+  void ActionDisplayWithCommand::readParameters()
   {
     
     m_trackingClient->readParameters();
@@ -194,6 +283,11 @@ namespace trackingClient
   bool 
   ActionDisplayWithCommand::clickToInitPose(vpHomogeneousMatrix & cMo)
   {
+    m_tracker.resetTracker();
+    vpCameraParameters cam = m_actionGrabClient->camera();
+    m_tracker.setCameraParameters(cam);
+    m_tracker.loadModel(getModelFileFromModelName(m_modelName).c_str());
+  
     try{
     m_tracker.initClick(m_image, 
 			getInitFileFromModelName(m_modelName).c_str());
@@ -206,7 +300,6 @@ namespace trackingClient
       return false;
     }
     m_tracker.getPose(cMo); 
-    vpCameraParameters cam = m_actionGrabClient->camera();
     m_tracker.display(m_image,cMo,cam,vpColor::blue);
     vpDisplay::flush(m_image);
     sleep(1);

@@ -35,12 +35,28 @@ namespace trackingClient
        const std::string& configurationName,
        unsigned desPoseNb = 1,
        vpColor color = vpColor::blue,
-       bool logData = false);
+       bool logData = false,
+       std::string  afileNameOfPoses=std::string(""));
     virtual ~ActionDisplayWithCommand();
     virtual bool Initialize();
     virtual bool ExecuteAction();
     virtual void CleanUp();
 
+    /*! \name Methods to get a set of poses
+      @{
+    */
+
+    /*! \brief  Read a file of poses. 
+      \param return false if m_fileNameOfPoses is empty
+      or if the filename cannot be open.
+     */
+    bool readFileOfPoses();
+
+    /*! \brief Getting the poses through text user interface.
+     Optionnally save the data for further usage.*/
+    void userInterfaceInitPoses();
+
+    /*! @} */
     /// \brief Return the pose determined from user clicks.
     const vpHomogeneousMatrix& initialPose() const
     {
@@ -60,7 +76,7 @@ namespace trackingClient
     bool clickToInitPose(vpHomogeneousMatrix & cMo);
     /// This function display images untill the user clicks
     /// it is usefull to position the robot
-    void waitForUserClick();
+    void waitForUserClick(std::string t="");
     /// This function uses user clicks to init the desired pose
     void clickToInitDesiredPose(std::vector<vpHomogeneousMatrix>& desiredPoseList);
     /// \brief Write current debug information on disk.
@@ -90,6 +106,9 @@ namespace trackingClient
     std::string  m_modelName;
     /// Name of the configuration file 
     std::string  m_configurationName;
+
+    /// Name of the file storing the set of poses.
+    std::string m_fileNameOfPoses;
     
    
   };

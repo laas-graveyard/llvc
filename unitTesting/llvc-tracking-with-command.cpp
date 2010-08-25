@@ -13,6 +13,8 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <sstream>
+#include <time.h>
+#include <sys/time.h>
 
 #include <llvc/action-grab.h>
 #include <llvc/action-tracking-with-command.h>
@@ -22,7 +24,7 @@
 #include <visp/vpDisplayX.h>
 #include <visp/vpParseArgv.h>
 
-#define GETOPTARGS  "h:k:n:"
+#define GETOPTARGS  "h:k:n:f:"
 
 using namespace trackingClient;
 
@@ -42,7 +44,10 @@ void usage(const char* name)
     	    <<std::endl; 
 }
 
-bool readOption (int argc, const char ** argv,  unsigned &nbDesPose,int & Verbose)
+bool readOption (int argc, const char ** argv,  
+		 unsigned &nbDesPose,
+		 int & Verbose,
+		 std::string & aFileName)
 {
 
   const char *optarg ="";
@@ -58,7 +63,11 @@ bool readOption (int argc, const char ** argv,  unsigned &nbDesPose,int & Verbos
 	    nbDesPose=atoi(optarg);
 	    break;
 	  }
-       
+	  
+	case 'f':
+	  {
+	    aFileName = optarg;
+	  }
        case 'v':
 	  {
 	    Verbose = atoi(optarg);
@@ -90,9 +99,11 @@ int main (int argc, const char **argv)
   // set default parameters
   int Verbose = 3;
   unsigned nbDesPose = 1;
+  std::string aFileNameOfPoses;
   // read user option
-  if(!readOption (argc, argv, nbDesPose,Verbose))
+  if(!readOption (argc, argv, nbDesPose,Verbose, aFileNameOfPoses))
     return -1;
+  ODEBUG3("aFileNameOfPoses:" <<aFileNameOfPoses);
   ODEBUG("Verbosity mode is:" << Verbose );
   ODEBUG3("Nb desired posed is:" << nbDesPose );
   std::string configurationName = "default"; 
@@ -125,7 +136,8 @@ int main (int argc, const char **argv)
 	 configurationName,
 	 nbDesPose,
 	 vpColor::blue, 
-	 true);
+	 true,
+	 aFileNameOfPoses);
       
       if (Verbose>2)
 	std::cout << *clientGrab 
@@ -154,17 +166,52 @@ int main (int argc, const char **argv)
 
      
       ODEBUG3("\n7. LOOP\n");
-      while (!(display.trackingClient()->movementFinished()))
-      {
-        iter++;
-        if (Verbose>2)
-          std::cout << "Frame " << iter << iendl;
-        clientGrab->ExecuteAction();
-        display.ExecuteAction();
-        
-      }
-      
+
+      struct timeval currentTimeStamp,previousTimeStamp;
+      double totalTime=0.0;
+      unsigned long int lNbIt=0;
+
+      gettimeofday(&previousTimeStamp,0);
+      do
+	{
+	
+	  while (!(display.trackingClient()->movementFinished()))
+	    {
+	      
+	      iter++;
+	      if (Verbose>2)
+		std::cout << "Frame " << iter << iendl;
+	      clientGrab->ExecuteAction();
+	      display.ExecuteAction();
+	      
+
+	      gettimeofday(&currentTimeStamp,0);
+	      double timeDiffBetweenCurrentAndPrev = 
+		currentTimeStamp.tv_sec -
+		previousTimeStamp.tv_sec +
+		0.0000001 * (currentTimeStamp.tv_usec -
+			     previousTimeStamp.tv_usec);
+	      if (timeDiffBetweenCurrentAndPrev<0.030)
+		{
+		  unsigned int timetosleep = 
+		    (unsigned int)((0.03-timeDiffBetweenCurrentAndPrev)*1000000);
+		  std::cout << "timetosleep" << timetosleep << std::endl;
+		  usleep(timetosleep);
+		}
+
+	      previousTimeStamp=currentTimeStamp;
+
+	      totalTime += timeDiffBetweenCurrentAndPrev;
+	      lNbIt++;
+
+	    }
+
+	  display.waitForUserClick("Control converged\n Click For a Next Pose");
+
+	}
+      while(display.trackingClient()->nextDesiredPose());
       std::cout << "    -------- Finish ! -------- " << std::endl;
+      std::cout << " Mean acquistion time:" << totalTime/lNbIt << std::endl;
 
       display.CleanUp();
       clientGrab->CleanUp();
