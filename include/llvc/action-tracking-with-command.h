@@ -41,6 +41,8 @@ namespace trackingClient
      ActionTrackingWithCommand
       (boost::shared_ptr<ActionTracking> trackerClient,
        homogeneousMatrix_t& desiredPoseList,
+       const std::string &lcomputeLawProcess_name=
+       std::string("ComputeControlLawProcess"),
        double threshold = 1e-1,
        unsigned currentIndex = 0 );
     virtual ~ActionTrackingWithCommand();
@@ -60,6 +62,8 @@ namespace trackingClient
     void clearDesiredPose();
     /// \brief read the config parameters
     void readParameters(); 
+    /// \brief init pose.
+    void initPose();
     
     /// \brief Model name in the database.
     const std::string& modelName() const

@@ -36,7 +36,8 @@ namespace trackingClient
        unsigned desPoseNb = 1,
        vpColor color = vpColor::blue,
        bool logData = false,
-       std::string  afileNameOfPoses=std::string(""));
+       std::string  afileNameOfPoses=std::string(""),
+       std::string computeLawProcess_name=std::string(""));
     virtual ~ActionDisplayWithCommand();
     virtual bool Initialize();
     virtual bool ExecuteAction();

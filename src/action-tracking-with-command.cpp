@@ -41,14 +41,20 @@ namespace trackingClient
   ActionTrackingWithCommand::ActionTrackingWithCommand
   (boost::shared_ptr<ActionTracking> trackerClient,
    homogeneousMatrix_t& desiredPoseList,
+   const std::string &lcomputeLawProcess_name,
    double threshold,
    unsigned currentIndex)
-    : ActionTracking(computeLawProcess_name, trackerClient->grabClient()),
+    : ActionTracking(lcomputeLawProcess_name, trackerClient->grabClient()),
       m_trackerClient(trackerClient),
       m_cdMoTab(desiredPoseList),
       m_threshold(threshold),
       m_index(currentIndex)
      
+  {
+    initPose();
+  }
+
+  void ActionTrackingWithCommand::initPose()
   {
     ODEBUG3(" m_trackerClient pose\n"<< m_trackerClient->pose());
     ModelTrackerInterface_var serverTracker;

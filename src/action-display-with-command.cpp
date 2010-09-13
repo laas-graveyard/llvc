@@ -40,7 +40,8 @@ namespace trackingClient
    unsigned desPoseNb,
    vpColor color,
    bool logData,
-   std::string fileNameOfPoses)
+   std::string fileNameOfPoses,
+   std::string lcomputeLawProcess_name)
     : ActionDisplay(gc),
       m_trackingClient(),
       m_actionTracking(),
@@ -104,7 +105,8 @@ namespace trackingClient
       boost::shared_ptr<ActionTrackingWithCommand>
       (new ActionTrackingWithCommand
        (m_actionTracking,
-	m_desiredPoseList) );
+	m_desiredPoseList,
+	lcomputeLawProcess_name) );
        
   
  
