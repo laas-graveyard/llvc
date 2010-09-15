@@ -5,7 +5,7 @@ ADD_LLV_CLIENT(
   SOURCES
 	llvc-grab.cpp
   LINK_WITH
-	${PROJECT_NAME}_LIBRARY_NAME
+	${PROJECT_NAME}
   COMPILE_FLAGS
   "-g -Wall -fexceptions "
   )
@@ -15,7 +15,7 @@ ADD_LLV_CLIENT(
   SOURCES
 	llvc-grab-with-display.cpp
   LINK_WITH
-	${PROJECT_NAME}_LIBRARY_NAME
+	${PROJECT_NAME}
   COMPILE_FLAGS
   "-g -Wall -fexceptions "
   )
@@ -25,7 +25,7 @@ ADD_LLV_CLIENT(
   SOURCES
 	llvc-tracking.cpp
   LINK_WITH
-	${PROJECT_NAME}_LIBRARY_NAME
+	${PROJECT_NAME}
   COMPILE_FLAGS
   "-g -Wall -fexceptions "
   )
@@ -35,7 +35,7 @@ ADD_LLV_CLIENT(
   SOURCES
 	llvc-tracking-kalman.cpp
   LINK_WITH
-	${PROJECT_NAME}_LIBRARY_NAME
+	${PROJECT_NAME}
   COMPILE_FLAGS
   "-g -Wall -fexceptions "
   )
@@ -45,7 +45,7 @@ ADD_LLV_CLIENT(
   SOURCES
 	llvc-calibration.cpp
   LINK_WITH
-	${PROJECT_NAME}_LIBRARY_NAME
+	${PROJECT_NAME}
   COMPILE_FLAGS
   "-g -Wall -fexceptions "
   )
@@ -55,7 +55,7 @@ ADD_LLV_CLIENT(
   SOURCES
 	llvc-tracking-with-command.cpp
   LINK_WITH
-	${PROJECT_NAME}_LIBRARY_NAME
+	${PROJECT_NAME}
   COMPILE_FLAGS
   "-g -Wall -fexceptions "
   )
