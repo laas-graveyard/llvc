@@ -45,7 +45,7 @@ int main ()
 	}
       vpImageIo::writePGM
 	(I,
-	 (boost::format("/tmp/llvc-calibration-%1%.pgm")
+	 (boost::format("/tmp/llvc-calibration-%02d.pgm")
 	  % nImage).str()
 	 );
     }
