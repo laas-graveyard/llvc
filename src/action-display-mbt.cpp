@@ -54,7 +54,7 @@ namespace trackingClient
     vpCameraParameters cam = m_actionGrabClient->camera();
     m_tracker.setCameraParameters(cam);
     m_tracker.loadModel(getModelFileFromModelName (modelName).c_str());
-    m_tracker.initClick(m_image, getInitFileFromModelName(modelName).c_str()) ;
+    m_tracker.initClick(m_image, getInitFileFromModelName(modelName).c_str());
     m_tracker.track(m_image);
     m_tracker.getPose(m_initialPose);
 
