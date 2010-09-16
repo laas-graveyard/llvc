@@ -40,3 +40,7 @@ ADD_EXAMPLE(tracking)
 ADD_EXAMPLE(tracking-kalman)
 ADD_EXAMPLE(tracking-with-command)
 ADD_EXAMPLE(calibration)
+
+# Link against Boost when required.
+TARGET_LINK_LIBRARIES(llvc-calibration ${Boost_LIBRARIES})
+TARGET_LINK_LIBRARIES(llvc-tracking ${Boost_LIBRARIES})
