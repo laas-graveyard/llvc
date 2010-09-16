@@ -15,6 +15,12 @@
 #include "llvc/tools/indent.hh"
 #include "llvc/tools/visp-io.hh"
 
+// LLVC_LOGGINGDIR is used to know where to log debug information.
+#ifndef LLVC_LOGGINGDIR
+# error "LLVC_LOGGINGDIR should be defined."
+#endif //! LLVC_LOGGINGDIR
+
+
 namespace trackingClient
 {
 
@@ -22,10 +28,8 @@ namespace trackingClient
   
   /// \brief default data path
   static const std::string defaultPath = "./data/model/";
-  /// \brief Installation prefix.
-  static const std::string prefix = CMAKE_INSTALL_PREFIX;
   /// \brief Logging directory.
-  static const std::string loggingDir = prefix + "/var/log";
+  static const std::string loggingDir = LLVC_LOGGINGDIR;
   /// \brief Process name
   static const std::string computeLawProcess_name = "ComputeControlLawProcess";
 

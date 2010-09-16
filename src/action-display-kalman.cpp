@@ -17,18 +17,15 @@
 #include "llvc/action-display-kalman.h"
 #include "llvc/tools/indent.hh"
 
-// CMAKE_INSTALL_PREFIX is used to know where
-// to log debug information.
-#ifndef CMAKE_INSTALL_PREFIX
-# error "CMAKE_INSTALL_PREFIX should be defined."
-#endif //! CMAKE_INSTALL_PREFIX
+// LLVC_LOGGINGDIR is used to know where to log debug information.
+#ifndef LLVC_LOGGINGDIR
+# error "LLVC_LOGGINGDIR should be defined."
+#endif //! LLVC_LOGGINGDIR
 
 namespace trackingClient
 {
-  /// \brief Installation prefix.
-  static const std::string prefix = CMAKE_INSTALL_PREFIX;
   /// \brief Logging directory.
-  static const std::string loggingDir = prefix + "/var/log";
+  static const std::string loggingDir = LLVC_LOGGINGDIR;
 
   ActionDisplayKalman::ActionDisplayKalman(boost::shared_ptr<ActionGrab> gc,
 				     const std::string& modelName,
