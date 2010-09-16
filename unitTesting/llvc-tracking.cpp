@@ -11,6 +11,8 @@
 #include <cassert>
 #include <iostream>
 
+#include <boost/program_options.hpp>
+
 #include <llvc/action-grab.h>
 #include <llvc/action-tracking-mbt.h>
 #include <llvc/action-display-mbt.h>
@@ -18,76 +20,141 @@
 
 #include <visp/vpDisplayX.h>
 
+#define LLVC_DEBUG(LEVEL, DATA)			\
+  do {						\
+    if (options.verbosity >= (LEVEL))		\
+      std::cout << DATA << iendl;		\
+  } while (0)
+
+#define LLVC_DEBUG1(DATA) LLVC_DEBUG(1, DATA)
+#define LLVC_DEBUG2(DATA) LLVC_DEBUG(2, DATA)
+#define LLVC_DEBUG3(DATA) LLVC_DEBUG(3, DATA)
+
+
 using namespace trackingClient;
 
-int main ()
+namespace po = boost::program_options;
+
+struct Options
 {
+  std::string modelName;
+  std::string modelConfiguration;
+  unsigned verbosity;
+};
+
+int main (int argc, char* argv[])
+{
+  Options options;
+
+  po::options_description desc ("Allowed options");
+
+  desc.add_options ()
+    ("help,h", "produce help message")
+
+    ("model,m",
+     po::value<std::string> (&options.modelName)->default_value
+     ("ElectricWallFar"),
+     "set the model name")
+
+    ("model-configuration,c",
+     po::value<std::string> (&options.modelConfiguration)->default_value
+     ("default"),
+     "set the model configuration")
+
+    ("verbosity,v",
+     po::value<unsigned> (&options.verbosity)->default_value (0),
+     "set the verbosity level")
+    ;
+
+  po::variables_map vm;
+  try
+    {
+      po::store (po::parse_command_line (argc, argv, desc), vm);
+      po::notify (vm);
+    }
+  catch (po::error& error)
+    {
+      std::cerr << "Error while parsing argument: "
+		<< error.what () << std::endl;
+      return 1;
+    }
+
+  if (vm.count ("help"))
+    {
+      std::cout << desc << "\n";
+      std::cout << "This program starts a model-based tracking on the server.\n"
+		<< "It needs at least a model to track as an input.\n"
+		<< "By default, the electric wall at JRL Tsukuba will be used.\n"
+		<< "\n"
+		<< "Example:\n"
+		<< "./LLVC-tracking --model=my-new-model"
+		<< std::endl;
+      return 0;
+    }
+
+
   vpHomogeneousMatrix cMo;
 
-  int Verbose = 0;
+
 
   try
     {
-      ODEBUG3("\n1. Construct Grabber\n");
+      LLVC_DEBUG1("1. Construct Grabber");
       // Start with TRIGGER_MODE
       boost::shared_ptr<ActionGrab> clientGrab(new ActionGrab(true,true));
       assert (clientGrab);
 
-      ODEBUG3("\n2. Initialize Grabber\n");
+      LLVC_DEBUG1("2. Initialize Grabber");
       clientGrab->Initialize();
-      if (Verbose>2)
-	std::cout << *clientGrab << std::endl;
+      LLVC_DEBUG2(*clientGrab);
 
-      ODEBUG3("\n3. Execute Grabber\n");
+      LLVC_DEBUG1("3. Execute Grabber");
       clientGrab->ExecuteAction();
 
-      ODEBUG3("\n4. Construct Display\n");
-      ActionDisplayMbt display(clientGrab, "ElectricWallFar", "default");
-      //ActionDisplayMbt display(clientGrab, "jrlLabGround", "default",
-      //		       vpColor::blue, true);
-      if (Verbose>2)
+      LLVC_DEBUG1("4. Construct Display");
+      ActionDisplayMbt display(clientGrab,
+			       options.modelName,
+			       options.modelConfiguration);
+
+      if (options.verbosity > 2)
 	std::cout << *clientGrab << std::endl;
 
       // FixME redundant with true  option in contructor...  no?
       // display.trackingClient()->setTrackingParameters("DATA", "ON");
 
 
-      ODEBUG3("\n4. Initialize Display\n");
+      LLVC_DEBUG1("4. Initialize Display");
       display.Initialize();
 
 
-      ODEBUG3("\n4.5 Initialize Display\n");
+      LLVC_DEBUG1("4.5 Initialize Display");
       // Switch to FLOW
       clientGrab->setTriggerMode(false);
 
-      ODEBUG3("\n5. Execute Display\n");
+      LLVC_DEBUG1("5. Execute Display");
       display.ExecuteAction();
 
-      ODEBUG3("\n6. Print all\n");
-      if (Verbose>2)
-	std::cout << *clientGrab << iendl
-		  << display << iendl;
+      LLVC_DEBUG1("6. Print all" << iendl
+		  << *clientGrab << iendl
+		  << display);
 
-      ODEBUG3("\n7. LOOP\n");
+      LLVC_DEBUG1("7. LOOP");
 
       unsigned int nbIter = 3000000;
       for (unsigned i = 0; i < nbIter; ++i)
 	{
-	  if (Verbose>2)
-	    std::cout << "Frame " << i << iendl;
+	  LLVC_DEBUG2("Frame " << i);
 	  clientGrab->ExecuteAction();
 	  display.ExecuteAction();
-	  if (Verbose>2)
-	    std::cout << *clientGrab << iendl
-		      << display << iendl;
+	  LLVC_DEBUG2(*clientGrab << iendl << display);
 	}
       display.CleanUp();
       clientGrab->CleanUp();
 
     }
-  catch(char *myexception)
+  catch(char* myexception)
     {
-      std::cerr<< "Exception:" << myexception << std::endl;
+      std::cerr << "Exception:" << myexception << std::endl;
     }
 
   return 0;

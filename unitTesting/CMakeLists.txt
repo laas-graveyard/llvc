@@ -26,6 +26,7 @@ ADD_LLV_CLIENT(
 	llvc-tracking.cpp
   LINK_WITH
 	${PROJECT_NAME}
+	${Boost_LIBRARIES}
   COMPILE_FLAGS
   "-g -Wall -fexceptions "
   )
@@ -46,6 +47,7 @@ ADD_LLV_CLIENT(
 	llvc-calibration.cpp
   LINK_WITH
 	${PROJECT_NAME}
+	${Boost_LIBRARIES}
   COMPILE_FLAGS
   "-g -Wall -fexceptions "
   )
