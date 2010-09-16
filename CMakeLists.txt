@@ -27,6 +27,9 @@ ADD_PACKAGES(OpenCV)
 ADD_PACKAGE_OPTION(VISP DESCRIPTION "search for visual servoing plateform.")
 ADD_PACKAGE_OPTION(OmniORB4 OUTPUT_VAR OMNIORB4)
 
+# Search for Boost.
+FIND_PACKAGE(Boost 1.34 COMPONENTS filesystem system program_options)
+
 # Source files exploration
 add_subdirectory (include)
 add_subdirectory (src)
