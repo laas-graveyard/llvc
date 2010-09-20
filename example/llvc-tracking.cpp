@@ -39,6 +39,7 @@ struct Options
 {
   std::string modelName;
   std::string modelConfiguration;
+  bool logData;
   unsigned verbosity;
 };
 
@@ -60,6 +61,10 @@ int main (int argc, char* argv[])
      po::value<std::string> (&options.modelConfiguration)->default_value
      ("default"),
      "set the model configuration")
+
+    ("log-data,l",
+     po::value<bool> (&options.logData)->default_value (false),
+     "log images and tracking result in the logging directory")
 
     ("verbosity,v",
      po::value<unsigned> (&options.verbosity)->default_value (0),
@@ -114,7 +119,9 @@ int main (int argc, char* argv[])
       LLVC_DEBUG1("4. Construct Display");
       ActionDisplayMbt display(clientGrab,
 			       options.modelName,
-			       options.modelConfiguration);
+			       options.modelConfiguration,
+			       vpColor::red,
+			       options.logData);
 
       if (options.verbosity > 2)
 	std::cout << *clientGrab << std::endl;
