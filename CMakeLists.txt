@@ -78,3 +78,5 @@ FIND_PACKAGE(Boost 1.34 COMPONENTS filesystem system program_options)
 # Source files exploration
 ADD_SUBDIRECTORY(src)
 ADD_SUBDIRECTORY(example)
+
+SETUP_PROJECT_FINALIZE()
