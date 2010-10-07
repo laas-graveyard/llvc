@@ -59,3 +59,13 @@ ADD_LLV_CLIENT(
   COMPILE_FLAGS
   "-g -Wall -fexceptions "
   )
+
+ADD_LLV_CLIENT(
+  ${PROJECT_NAME}-tracking-with-commandiros2010
+  SOURCES
+	llvc-tracking-with-commandiros2010.cpp
+  LINK_WITH
+	${PROJECT_NAME}_LIBRARY_NAME
+  COMPILE_FLAGS
+  "-g -Wall -fexceptions "
+  )

@@ -195,7 +195,7 @@ int main (int argc, const char **argv)
 		{
 		  unsigned int timetosleep = 
 		    (unsigned int)((0.03-timeDiffBetweenCurrentAndPrev)*1000000);
-		  std::cout << "timetosleep" << timetosleep << std::endl;
+		  //		  std::cout << "timetosleep" << timetosleep << std::endl;
 		  usleep(timetosleep);
 		}
 

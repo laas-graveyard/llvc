@@ -7,6 +7,9 @@
 // implied warranties of fitness for a particular purpose.
 //
 // See the COPYING file for more information.
+#include <boost/format.hpp>
+
+#include <visp/vpImageIo.h>
 
 #include "llvc/action-display.h"
 
@@ -47,8 +50,16 @@ namespace trackingClient
   bool
   ActionDisplay::ExecuteAction()
   {
+    static unsigned long int index=0;
     m_image=m_actionGrabClient->image();
     display();
+    if (0)
+      {
+	boost::format fmtColor("I-%04d.pgm");
+	fmtColor % index;
+	vpImageIo::writePGM(m_image,fmtColor.str());
+	index++;
+      }
     return true;
   }
 

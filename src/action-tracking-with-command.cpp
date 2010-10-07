@@ -51,6 +51,9 @@ namespace trackingClient
       m_index(currentIndex)
      
   {
+    m_computeLawProcess_name = lcomputeLawProcess_name;
+    if (m_computeLawProcess_name.length()==0)
+      m_computeLawProcess_name = computeLawProcess_name;
     initPose();
   }
 
@@ -154,9 +157,9 @@ namespace trackingClient
   {
     ODEBUG3("init");
     m_trackerClient->Initialize();
-    ODEBUG3(computeLawProcess_name<<" started");
+    ODEBUG3(m_computeLawProcess_name<<" started");
     // FIXME : always true
-    return   m_LLVS->StartProcess(computeLawProcess_name.c_str());
+    return   m_LLVS->StartProcess(m_computeLawProcess_name.c_str());
   }
 
   bool
@@ -184,7 +187,7 @@ namespace trackingClient
   ActionTrackingWithCommand::CleanUp()
   {
     
-    m_LLVS->StopProcess(computeLawProcess_name.c_str());
+    m_LLVS->StopProcess(m_computeLawProcess_name.c_str());
     m_trackerClient->CleanUp();
     clearDesiredPose();
   }
@@ -201,7 +204,7 @@ namespace trackingClient
     errorTest[0] = error[0];
     errorTest[1] = error[2];
     errorTest[2] = error[4];
-    ODEBUG3(errorTest.infinityNorm());
+    ODEBUG(errorTest.infinityNorm());
     return errorTest.infinityNorm() < m_threshold;
   }
 

@@ -13,7 +13,7 @@
 #include <boost/format.hpp>
 
 #include <visp/vpImageIo.h>
-
+#include <visp/vpFeaturePoint.h>
 /// this include is to have the function getInitFileFromModelName
 #include "llvc/action-display-mbt.h"
 #include "llvc/action-display-with-command.h"
@@ -71,8 +71,11 @@ namespace trackingClient
     // Initialize the desired poses to be tracked.
     // Test if a filename is available.
     if (!readFileOfPoses())
-      // if not start the user interface.
-      userInterfaceInitPoses();
+      {
+	std::cerr<< "No file of poses. " << std::endl;
+	// if not start the user interface.
+	userInterfaceInitPoses();
+      }
 
 
     // Initialise the initial pose
@@ -99,6 +102,8 @@ namespace trackingClient
     	m_actionGrabClient,
     	m_modelName,
     	m_configurationName));
+
+    std::cerr<< "lcomputeLawProcess_name:" << lcomputeLawProcess_name << std::endl;
     
    
     m_trackingClient = 
@@ -331,6 +336,14 @@ namespace trackingClient
     // return false;
     vpDisplay::display(m_image);
     m_tracker.display (m_image, cMo, cam, m_color);
+    vpFeaturePoint sd;
+    double x=-0.0, y=0.0, Z=1.0;
+    sd.buildFrom(x,y,Z);
+    sd.display(cam,m_image);
+
+    vpFeaturePoint s = m_trackingClient->getCoG();
+    s.display(cam,m_image,vpColor::red);
+
     vpDisplay::flush(m_image);
 
     if (m_logData)
@@ -384,7 +397,10 @@ namespace trackingClient
     static unsigned index = 0;
 
     if (!file)
-      throw "failed to log data";
+      {
+	std::cerr << makeLogFilename("llvc-mbt.log").c_str() << std::endl;
+	throw "failed to log data";
+      }
 
     if (!index)
       {
@@ -417,14 +433,16 @@ namespace trackingClient
     // before storing it on the disk.
     vpImage<vpRGBa> colorImage;
     vpDisplay::getImage(m_image, colorImage);
-
-    boost::format fmtColor("Ires-%04d.ppm");
-    fmtColor % index;
-
-    boost::format fmt("I-%04d.pgm");
-    fmt % index;
-
-    vpImageIo::writePPM(colorImage, makeLogFilename(fmtColor.str()));
-    vpImageIo::writePGM(image, makeLogFilename(fmt.str()));
+    if (0)
+      {
+	boost::format fmtColor("Ires-%04d.ppm");
+	fmtColor % index;
+	
+	boost::format fmt("I-%04d.pgm");
+	fmt % index;
+	
+	vpImageIo::writePPM(colorImage, makeLogFilename(fmtColor.str()));
+	vpImageIo::writePGM(image, makeLogFilename(fmt.str()));
+      }
   }
 } // end of namespace trackingClient

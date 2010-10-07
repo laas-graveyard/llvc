@@ -161,6 +161,10 @@ namespace trackingClient
     convertCorbaHomogeneousMatrixToVisp
       (debugObject->aData, m_cMo);
  
+    double Z=1.0;
+    m_CoG.buildFrom(debugObject->CoG[0],
+		    debugObject->CoG[1],
+		    Z);
     m_timestamp.first = debugObject->anImgData.longData[0];
     m_timestamp.second = debugObject->anImgData.longData[1];
   }

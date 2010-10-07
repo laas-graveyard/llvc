@@ -66,6 +66,11 @@ namespace trackingClient
     {
       return m_timestamp;
     }
+    /// \brief Returns vpFeaturePoint (CoG of the object to be tracked).
+    const vpFeaturePoint& getCoG() const
+    {
+      return m_CoG;
+    }
 
     /// \brief Import readParameters from mother class.
     using ActionTracking::readParameters;
@@ -95,6 +100,8 @@ namespace trackingClient
     //FIXME: search what it means.
     /// Timestamps.
     timestamp_t m_timestamp;
+    /// CoG
+    vpFeaturePoint m_CoG;
 
     /// Model name in the database.
     const std::string m_modelName;

@@ -89,6 +89,13 @@ namespace trackingClient
     {
       return m_cdMoTab;
     }
+
+    /// \brief Returns vpFeaturePoint (CoG of the object to be tracked).
+    const vpFeaturePoint& getCoG() const
+    {
+      return m_trackerClient->getCoG();
+    }
+
     // return current tracked pose
     const vpHomogeneousMatrix& pose() const
     {
@@ -109,7 +116,8 @@ namespace trackingClient
     double m_threshold;
     /// \brief current index
     unsigned m_index;
-     
+    /// \brief Name of the control law to be computed.
+    std::string m_computeLawProcess_name;
     
 
   

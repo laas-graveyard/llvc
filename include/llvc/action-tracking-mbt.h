@@ -15,6 +15,7 @@
 # include <boost/shared_ptr.hpp>
 # include <visp/vpMbtTracker.h>
 # include <visp/vpHomogeneousMatrix.h>
+# include <visp/vpFeaturePoint.h>
 # include "llvc/action-tracking.h"
 
 namespace trackingClient
@@ -47,6 +48,10 @@ namespace trackingClient
   (const ModelTrackerInterface::HomogeneousMatrix& corba,
    vpHomogeneousMatrix& visp);
 
+
+  void convertCogToVisp
+    (double CoG[2],
+     vpFeaturePoint &vpfp);
 
   /// \brief Client for model-based tracker on LLVS.
   ///
@@ -90,6 +95,11 @@ namespace trackingClient
       return m_timestamp;
     }
 
+    /// \brief Returns vpFeaturePoint (CoG of the object to be tracked).
+    const vpFeaturePoint& getCoG() const
+    {
+      return m_CoG;
+    }
     /// \brief Import readParameters from mother class.
     using ActionTracking::readParameters;
     /// \brief Read configuration file and initialize parameters.
@@ -118,7 +128,9 @@ namespace trackingClient
     //FIXME: search what it means.
     /// Timestamps.
     timestamp_t m_timestamp;
-
+    
+    /// CoG
+    vpFeaturePoint m_CoG;
     /// Model name in the database.
     const std::string m_modelName;
     /// Configuration profile for the wanted model.
