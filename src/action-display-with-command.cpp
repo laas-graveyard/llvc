@@ -336,9 +336,13 @@ namespace trackingClient
     vpFeaturePoint sd;
     double x=-0.0, y=0.0, Z=1.0;
     sd.buildFrom(x,y,Z);
-    sd.display(cam,m_image);
+    sd.display(cam,m_image,vpColor::green);
 
-    vpFeaturePoint s = m_trackingClient->getCoG();
+    
+    vpFeaturePoint s;
+    double lX,lY,lZ=1.0;
+    m_trackingClient->getCoG(lX , lY);
+    s.buildFrom(lX,lY,lZ);
     s.display(cam,m_image,vpColor::red);
 
     vpDisplay::flush(m_image);

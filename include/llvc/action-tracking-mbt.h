@@ -96,9 +96,10 @@ namespace trackingClient
     }
 
     /// \brief Returns vpFeaturePoint (CoG of the object to be tracked).
-    const vpFeaturePoint& getCoG() const
+    void getCoG(double &x, double &y) const
     {
-      return m_CoG;
+      x = m_CoG.get_x();
+      y = m_CoG.get_y();
     }
     /// \brief Import readParameters from mother class.
     using ActionTracking::readParameters;

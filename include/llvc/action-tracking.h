@@ -79,7 +79,7 @@ namespace trackingClient
     
     /// \brief return the tracked position
     virtual const vpHomogeneousMatrix& pose()const=0;
-    virtual const vpFeaturePoint& getCoG()const=0;
+    virtual void getCoG(double &x,double &y)const=0;
     virtual const image_t& image()const=0;
     virtual const timestamp_t& timestamp()const=0;
     virtual const std::string& modelName()const=0;

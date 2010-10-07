@@ -91,9 +91,9 @@ namespace trackingClient
     }
 
     /// \brief Returns vpFeaturePoint (CoG of the object to be tracked).
-    const vpFeaturePoint& getCoG() const
+    void getCoG(double &x, double &y) const
     {
-      return m_trackerClient->getCoG();
+      m_trackerClient->getCoG(x,y);
     }
 
     // return current tracked pose
