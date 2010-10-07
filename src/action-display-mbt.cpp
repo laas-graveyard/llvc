@@ -17,18 +17,15 @@
 #include "llvc/action-display-mbt.h"
 #include "llvc/tools/indent.hh"
 
-// CMAKE_INSTALL_PREFIX is used to know where
-// to log debug information.
-#ifndef CMAKE_INSTALL_PREFIX
-# error "CMAKE_INSTALL_PREFIX should be defined."
-#endif //! CMAKE_INSTALL_PREFIX
+// LLVC_LOGGINGDIR is used to know where to log debug information.
+#ifndef LLVC_LOGGINGDIR
+# error "LLVC_LOGGINGDIR should be defined."
+#endif //! LLVC_LOGGINGDIR
 
 namespace trackingClient
 {
-  /// \brief Installation prefix.
-  static const std::string prefix = CMAKE_INSTALL_PREFIX;
   /// \brief Logging directory.
-  static const std::string loggingDir = prefix + "/var/log";
+  static const std::string loggingDir = LLVC_LOGGINGDIR;
 
   ActionDisplayMbt::ActionDisplayMbt(boost::shared_ptr<ActionGrab> gc,
 				     const std::string& modelName,
@@ -54,7 +51,7 @@ namespace trackingClient
     vpCameraParameters cam = m_actionGrabClient->camera();
     m_tracker.setCameraParameters(cam);
     m_tracker.loadModel(getModelFileFromModelName (modelName).c_str());
-    m_tracker.initClick(m_image, getInitFileFromModelName(modelName).c_str()) ;
+    m_tracker.initClick(m_image, getInitFileFromModelName(modelName).c_str());
     m_tracker.track(m_image);
     m_tracker.getPose(m_initialPose);
 
