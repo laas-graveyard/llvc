@@ -14,6 +14,8 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
+INCLUDE(../cmake/idl.cmake)
+
 # Add required definitions.
 ADD_DEFINITIONS(${VISP_CFLAGS})
 ADD_DEFINITIONS(${LLVS_CFLAGS})
@@ -26,31 +28,13 @@ ADD_DEFINITIONS(-DBUILDING_LLVC)
 # Define logging directory location.
 ADD_DEFINITIONS(-DLLVC_LOGGINGDIR="${CMAKE_INSTALL_PREFIX}/var/log")
 
-
-# GENERATE_IDL_FILE FILENAME DIRECTORY
-# ------------------------------------
-#
-# Generate stubs from an idl file.
-# An include directory can also be specified.
-#
-# FILENAME : IDL filename without the extension
-# DIRECTORY : IDL directory
-#
-MACRO(GENERATE_IDL_FILE FILENAME DIRECTORY)
-  ADD_CUSTOM_COMMAND(
-    OUTPUT ${FILENAME}SK.cc ${FILENAME}.hh
-    COMMAND ${OMNIIDL}
-    ARGS -bcxx ${DIRECTORY}/${FILENAME}.idl
-    MAIN_DEPENDENCY ${DIRECTORY}/${FILENAME}.idl
-    )
-  SET(ALL_IDL_STUBS ${FILENAME}SK.cc ${FILENAME}.hh ${ALL_IDL_STUBS})
-ENDMACRO(GENERATE_IDL_FILE FILENAME DIRECTORY)
+# This line is required to handle retro-compatibility issues with
+# some CMake commandes which used to not search for their parameters
+# in the build directory.
 INCLUDE_DIRECTORIES(${CMAKE_CURRENT_BINARY_DIR})
-
 
 # Generate LLVS IDL.
 SET(LLVT_IDL_DIR ${LLVT_PREFIX}/share/idl/llvs)
-MESSAGE(${LLVT_PREFIX})
 GENERATE_IDL_FILE(BRep ${LLVT_IDL_DIR})
 GENERATE_IDL_FILE(BtlSlamInterface ${LLVT_IDL_DIR})
 GENERATE_IDL_FILE(common ${LLVT_IDL_DIR})

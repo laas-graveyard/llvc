@@ -18,6 +18,7 @@
 CMAKE_MINIMUM_REQUIRED(VERSION 2.6.4)
 
 INCLUDE(cmake/base.cmake)
+INCLUDE(cmake/image/visp.cmake)
 
 SET(PROJECT_NAME llvc)
 SET(PROJECT_VERSION 1.0.0.99)
@@ -28,39 +29,7 @@ SET(CXX_DISABLE_WERROR True)
 
 SETUP_PROJECT()
 
-# FIND_VISP()
-# -----------
-#
-# Find ViSP through the use of visp-config.
-#
-# To make ViSP detection both robust and simple, rely on the
-# visp-config tool instead of the specic CMake mechanism.
-#
-# One just has to make sure that visp-config is available in its path
-# to make ViSP detected automagically.
-#
-# Implementation note: please do *not* modify this code to add a
-# variable which override the path and the standard look-up algorithm,
-# it introduces complexity for nothing. Fix your path instead.
-MACRO(FIND_VISP)
-  FIND_PROGRAM(VISP_CONFIG visp-config)
-  EXECUTE_PROCESS(
-    COMMAND ${VISP_CONFIG} --prefix
-    OUTPUT_VARIABLE VISP_PREFIX
-    OUTPUT_STRIP_TRAILING_WHITESPACE)
-  EXECUTE_PROCESS(
-    COMMAND ${VISP_CONFIG} --cflags
-    OUTPUT_VARIABLE VISP_CFLAGS
-    OUTPUT_STRIP_TRAILING_WHITESPACE)
-  EXECUTE_PROCESS(
-    COMMAND ${VISP_CONFIG} --libs
-    OUTPUT_VARIABLE VISP_LIBS
-    OUTPUT_STRIP_TRAILING_WHITESPACE)
-  EXECUTE_PROCESS(
-    COMMAND ${VISP_CONFIG} --dumpversion
-    OUTPUT_VARIABLE VISP_VERSION
-    OUTPUT_STRIP_TRAILING_WHITESPACE)
-ENDMACRO(FIND_VISP)
+SET(PKG_CONFIG_LIBS "${PKG_CONFIG_LIBS} ${LIBINCL_KW}llvs${LIB_EXT}")
 
 FIND_VISP()
 
@@ -68,9 +37,7 @@ FIND_VISP()
 ADD_REQUIRED_DEPENDENCY(LLVT)
 
 # Search for omniORB.
-FIND_PROGRAM(OMNIIDL omniidl)
 ADD_REQUIRED_DEPENDENCY(omniORB4)
-
 
 # Search for Boost.
 FIND_PACKAGE(Boost 1.34 COMPONENTS filesystem system program_options)
