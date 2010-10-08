@@ -12,7 +12,7 @@
 # define ACTION_DISPLAY_MBT_H_
 # include <boost/shared_ptr.hpp>
 
-# include <visp/vpMbtTracker.h>
+# include <visp/vpMbEdgeTracker.h>
 # include <visp/vpHomogeneousMatrix.h>
 
 # include "llvc/action-display.h"
@@ -95,7 +95,7 @@ namespace trackingClient
     /// Tracking client.
     boost::shared_ptr<ActionTrackingMbt> m_trackingClient;
     /// Local tracker for initialization and display \bf only.
-    vpMbtTracker m_tracker;
+    vpMbEdgeTracker m_tracker;
     /// Initial pose determined from user clicks.
     vpHomogeneousMatrix m_initialPose;
     /// Color used for model project on the image.

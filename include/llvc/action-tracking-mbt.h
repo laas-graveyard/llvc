@@ -13,7 +13,7 @@
 # include <iosfwd>
 # include <string>
 # include <boost/shared_ptr.hpp>
-# include <visp/vpMbtTracker.h>
+# include <visp/vpMbEdgeTracker.h>
 # include <visp/vpHomogeneousMatrix.h>
 # include <visp/vpFeaturePoint.h>
 # include "llvc/action-tracking.h"

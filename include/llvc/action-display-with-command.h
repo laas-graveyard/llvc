@@ -12,7 +12,7 @@
 # define ACTION_DISPLAY_WITH_COMMAND_H_
 # include <boost/shared_ptr.hpp>
 
-# include <visp/vpMbtTracker.h>
+# include <visp/vpMbEdgeTracker.h>
 # include <visp/vpHomogeneousMatrix.h>
 
 # include "llvc/action-display.h"
@@ -47,7 +47,7 @@ namespace trackingClient
       @{
     */
 
-    /*! \brief  Read a file of poses. 
+    /*! \brief  Read a file of poses.
       \param return false if m_fileNameOfPoses is empty
       or if the filename cannot be open.
      */
@@ -83,35 +83,35 @@ namespace trackingClient
     /// \brief Write current debug information on disk.
     void logData() const;
     /// \brief read the config parameters
-    void readParameters(); 
-  
+    void readParameters();
+
   private:
-   
+
     /// Command client.
     boost::shared_ptr<ActionTrackingWithCommand> m_trackingClient;
     /// Tracking client.
     boost::shared_ptr<ActionTracking> m_actionTracking;
     /// Local tracker for initialization and display \bf only.
-    vpMbtTracker m_tracker;
+    vpMbEdgeTracker m_tracker;
     /// Initial pose determined from user clicks.
     vpHomogeneousMatrix m_initialPose;
     // list of desired pose
     homogeneousMatrix_t  m_desiredPoseList;
     /// Nb of desired Pose to reach, default is 1
-    unsigned m_desPoseNb; 
+    unsigned m_desPoseNb;
     /// Color used for model project on the image, default is blue
     vpColor m_color;
     /// Should this class writes its data on disk?, default is no
     bool m_logData;
     /// Name of the CAD model
     std::string  m_modelName;
-    /// Name of the configuration file 
+    /// Name of the configuration file
     std::string  m_configurationName;
 
     /// Name of the file storing the set of poses.
     std::string m_fileNameOfPoses;
-    
-   
+
+
   };
 } // end of namespace trackingClient
 

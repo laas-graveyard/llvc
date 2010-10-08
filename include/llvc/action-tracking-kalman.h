@@ -15,7 +15,7 @@
 
 # include <boost/shared_ptr.hpp>
 
-# include <visp/vpMbtTracker.h>
+# include <visp/vpMbEdgeTracker.h>
 # include <visp/vpHomogeneousMatrix.h>
 
 
