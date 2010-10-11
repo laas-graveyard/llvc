@@ -22,19 +22,19 @@
 namespace trackingClient
 {
   /// \brief Client for command law computation.
-  /// This class select the desired position cdMo 
+  /// This class select the desired position cdMo
   /// among a list of cdMo and send it to the server
   /// it also start and stop the command process
-  ///  
-  /// 
-  /// 
+  ///
+  ///
+  ///
   class ActionTrackingWithCommand : public ActionTracking
   {
   public:
     typedef std::vector<vpHomogeneousMatrix> homogeneousMatrix_t;
     typedef vpImage<unsigned char> image_t;
     typedef std::pair<long int, long int> timestamp_t;
- 
+
     /// \brief Construct the class using its server process name.
     ///
     /// FIXME : synchornise threshold with server
@@ -48,23 +48,23 @@ namespace trackingClient
     virtual ~ActionTrackingWithCommand();
 
     virtual std::ostream& print (std::ostream& stream) const;
-   
+
     virtual bool Initialize();
     virtual bool ExecuteAction();
     virtual void CleanUp();
- 
+
     void addDesiredPose(vpHomogeneousMatrix & cdMo);
-   
+
     /// \brief Go to the next desired position
     /// return true when the next position is in the table
     /// return false if the position is not in the table
     bool nextDesiredPose();
     void clearDesiredPose();
     /// \brief read the config parameters
-    void readParameters(); 
+    void readParameters();
     /// \brief init pose.
     void initPose();
-    
+
     /// \brief Model name in the database.
     const std::string& modelName() const
     {
@@ -80,7 +80,7 @@ namespace trackingClient
     {
       return  m_trackerClient->image();
     }
- 
+
     const double& threshold()
     {
       return m_threshold;
@@ -107,7 +107,7 @@ namespace trackingClient
     const vpHomogeneousMatrix& desiredPose() const;
 
   private:
-    
+
      /// \brief Shared pointer on the tracking client.
     boost::shared_ptr<ActionTracking> m_trackerClient;
     /// \brief desired position
@@ -118,9 +118,9 @@ namespace trackingClient
     unsigned m_index;
     /// \brief Name of the control law to be computed.
     std::string m_computeLawProcess_name;
-    
 
-  
+
+
   };
 
 } // end of namespace trackingClient.

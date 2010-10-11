@@ -24,7 +24,7 @@
 
 namespace trackingClient
 {
- 
+
   /// \brief Client for model-based tracker on LLVS.
   ///
   /// This client manages the process start/stop and the

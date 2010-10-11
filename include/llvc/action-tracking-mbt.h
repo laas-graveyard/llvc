@@ -129,7 +129,7 @@ namespace trackingClient
     //FIXME: search what it means.
     /// Timestamps.
     timestamp_t m_timestamp;
-    
+
     /// CoG
     vpFeaturePoint m_CoG;
     /// Model name in the database.

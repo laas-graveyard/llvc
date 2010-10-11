@@ -62,7 +62,7 @@ namespace trackingClient
       virtual bool Initialize();
       virtual bool ExecuteAction();
       virtual void CleanUp();
-      
+
       void setTriggerMode(bool atriggerMode);
 
       const vpCameraParameters& camera() const
@@ -89,7 +89,7 @@ namespace trackingClient
       long m_cameraID;
       /// Image format.
       std::string m_format;
-   
+
       //FIXME: for now this is not synchronized with server-side.
       /// Visp camera parameters
       vpCameraParameters m_cam;

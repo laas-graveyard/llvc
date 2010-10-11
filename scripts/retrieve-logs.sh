@@ -11,7 +11,7 @@ repSourceDistantControl="${grxuser}@hrp2010c:~/src/OpenHRP/Controller/IOserver/r
 repSauvegardeDistant="${grxuser}@jrlhrp01-u:~/Dune-Embarki/"
 
 
-repExp="Exp$(date '+%Y%m%d')" 
+repExp="Exp$(date '+%Y%m%d')"
 repTime="$(date '+%Hh%M')"
 
 
@@ -68,18 +68,18 @@ then
     echo " Le repertoire existe"
     echo " Voulez vous l'effacer ? y/n/a"; read OPT_DELETE
     if [ ${OPT_DELETE} = y ]
-    then 
+    then
        	rm -r ${repPath}
         mkdir ${repPath}
     elif [ ${OPT_DELETE} = n ]
-    then     
+    then
     echo " Etes vous sur ? y/n" ; read OPT_CONFIRM
 	if [ ${OPT_CONFIRM} = n ]
         then
 	    echo "exit >> fin du script de copie."
             exit 1
 	fi
-    else  
+    else
         echo "exit >> fin du script de copie."
 	exit 1
 
@@ -92,10 +92,10 @@ fi
 
 if [ -d  ${repSourceLocale} ]
 then
-    if ! [ -d ${repPath}/FromClient ]; then 
+    if ! [ -d ${repPath}/FromClient ]; then
 	mkdir  ${repPath}/FromClient
     fi
-    if ! [ -d ${repPath}/FromRobot ]; then 
+    if ! [ -d ${repPath}/FromRobot ]; then
 	mkdir  ${repPath}/FromRobot
     fi
 
@@ -106,33 +106,33 @@ then
 
     # copie a distance
     echo " "
-    echo "copie distante des donnees de la vision ... " 
+    echo "copie distante des donnees de la vision ... "
     scp ${repSourceDistantVision}/dump* ${repPath}/FromRobot
 
     echo " "
-    echo "copie distante des donnees du control ... " 
+    echo "copie distante des donnees du control ... "
     scp ${repSourceDistantControl}/WalkTask-* ${repPath}/FromRobot
-  
+
     #create video from images
     #echo " "
-    #echo "Create videos ... " 
-    
+    #echo "Create videos ... "
+
 
 
     # create the tar gz
     echo " "
     echo "Creation de l'archive ${tarName}.tar.gz"
-    
+
 
     cd ${repPath}
     echo " "
     echo "Envoie de l'archive ${tarName}.tar.gz dans ${repSauvegardeDistant} "
-    
+
     tar -czf  ${tarName}.tar.gz FromClient FromRobot --checkpoint=5000
     scp ${tarName}.tar.gz ${repSauvegardeDistant}
     scp ${tarName}.tar.gz dune@jrlserver.muse.aist.go.jp:/home/dune/
     cd -
- 
-else 
+
+else
     echo "WARNING >>  ${repSourceLocale} is not a valid directory"
 fi
